@@ -41,7 +41,7 @@ fun HealthMateApp(healthConnectManager: HealthConnectManager) {
     }
     
     val permissionLauncher = rememberLauncherForActivityResult(
-        PermissionController.createRequestPermissionResultContract()
+        healthConnectManager.requestPermissionsActivityContract()
     ) { granted ->
         if (granted.containsAll(healthConnectManager.permissions)) {
             Log.d("HealthConnect", "Permissions granted successfully!")
@@ -50,7 +50,6 @@ fun HealthMateApp(healthConnectManager: HealthConnectManager) {
             showPermissionDeniedDialog()
         }
     }
-    
     
     LaunchedEffect(Unit) {
         val hasPermissions =
