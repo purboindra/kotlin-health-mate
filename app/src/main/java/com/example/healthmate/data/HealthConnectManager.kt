@@ -50,7 +50,8 @@ class HealthConnectManager(private val context: Context) {
         HealthPermission.getWritePermission(WeightRecord::class),
     )
     
-    val sensorManager = context.getSystemService(Context.SENSOR_SERVICE) as SensorManager
+    val sensorManager =
+        context.getSystemService(Context.SENSOR_SERVICE) as SensorManager
     val stepSensor = sensorManager.getDefaultSensor(Sensor.TYPE_STEP_COUNTER)
     val heartRateSensor = sensorManager.getDefaultSensor(Sensor.TYPE_HEART_RATE)
     
@@ -67,9 +68,11 @@ class HealthConnectManager(private val context: Context) {
     
     suspend fun findMissingPermissions(
     ) {
-        val grantedPermissions = healthConnectClient.permissionController.getGrantedPermissions()
+        val grantedPermissions =
+            healthConnectClient.permissionController.getGrantedPermissions()
         
-        val missingPermissions = permissions.filterNot { it in grantedPermissions }
+        val missingPermissions =
+            permissions.filterNot { it in grantedPermissions }
         if (missingPermissions.isNotEmpty()) {
             Log.e("HealthConnect", "Missing Permissions: $missingPermissions")
         } else {
@@ -85,19 +88,25 @@ class HealthConnectManager(private val context: Context) {
             "checkAvailability result: ${availability.intValue}"
         )
         
-        if (availability.intValue == HealthConnectClient.SDK_UNAVAILABLE_PROVIDER_UPDATE_REQUIRED) {
-            Log.d(
-                "HealthConnectManager", "Health connect need update"
-            )
-            promptUpdateHealthConnect()
-        } else if (availability.intValue == SDK_UNAVAILABLE) {
-            Log.d(
-                "HealthConnectManager", "Health connect not available"
-            )
-        } else {
-            Log.d(
-                "HealthConnectManager", "Health connect available"
-            )
+        when (availability.intValue) {
+            HealthConnectClient.SDK_UNAVAILABLE_PROVIDER_UPDATE_REQUIRED -> {
+                Log.d(
+                    "HealthConnectManager", "Health connect need update"
+                )
+                promptUpdateHealthConnect()
+            }
+            
+            SDK_UNAVAILABLE -> {
+                Log.d(
+                    "HealthConnectManager", "Health connect not available"
+                )
+            }
+            
+            else -> {
+                Log.d(
+                    "HealthConnectManager", "Health connect available"
+                )
+            }
         }
     }
     
@@ -111,29 +120,44 @@ class HealthConnectManager(private val context: Context) {
     }
     
     suspend fun requestMissingPermissions(permissions: Set<String>) {
-        val grantedPermissions = healthConnectClient.permissionController.getGrantedPermissions()
-        val missingPermissions = permissions.filterNot { it in grantedPermissions }
+        val grantedPermissions =
+            healthConnectClient.permissionController.getGrantedPermissions()
+        val missingPermissions =
+            permissions.filterNot { it in grantedPermissions }
         
         if (missingPermissions.isNotEmpty()) {
             val requestPermissionActivityContract =
                 PermissionController.createRequestPermissionResultContract()
             
-            val launcher = (context as ComponentActivity).registerForActivityResult(requestPermissionActivityContract) { granted ->
-                if (granted.containsAll(missingPermissions)) {
-                    Log.d("HealthConnect", "Missing permissions granted: $granted")
-                } else {
-                    Log.d("HealthConnect", "Some permissions were denied: $granted")
+            val launcher =
+                (context as ComponentActivity).registerForActivityResult(
+                    requestPermissionActivityContract
+                ) { granted ->
+                    if (granted.containsAll(missingPermissions)) {
+                        Log.d(
+                            "HealthConnect",
+                            "Missing permissions granted: $granted"
+                        )
+                    } else {
+                        Log.d(
+                            "HealthConnect",
+                            "Some permissions were denied: $granted"
+                        )
+                    }
                 }
-            }
             launcher.launch(missingPermissions.toSet())
         } else {
-            Log.d("HealthConnect", "All necessary permissions are already granted.")
+            Log.d(
+                "HealthConnect",
+                "All necessary permissions are already granted."
+            )
         }
     }
     
     
     suspend fun logGrantedPermissions() {
-        val grantedPermissions = healthConnectClient.permissionController.getGrantedPermissions()
+        val grantedPermissions =
+            healthConnectClient.permissionController.getGrantedPermissions()
         Log.d("HealthConnect", "Granted Permissions: $grantedPermissions")
     }
     
