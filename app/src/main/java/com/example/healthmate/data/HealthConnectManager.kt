@@ -63,23 +63,7 @@ class HealthConnectManager(private val context: Context) {
         context.startActivity(intent)
     }
     
-    var availability = mutableIntStateOf(SDK_UNAVAILABLE)
-        private set
-    
-    suspend fun findMissingPermissions(
-    ) {
-        val grantedPermissions =
-            healthConnectClient.permissionController.getGrantedPermissions()
-        
-        val missingPermissions =
-            permissions.filterNot { it in grantedPermissions }
-        if (missingPermissions.isNotEmpty()) {
-            Log.e("HealthConnect", "Missing Permissions: $missingPermissions")
-        } else {
-            Log.d("HealthConnect", "All permissions are granted! ✅")
-        }
-    }
-    
+    private var availability = mutableIntStateOf(SDK_UNAVAILABLE)
     
     private fun checkAvailability() {
         availability.intValue = HealthConnectClient.getSdkStatus(context)
@@ -97,6 +81,7 @@ class HealthConnectManager(private val context: Context) {
             }
             
             SDK_UNAVAILABLE -> {
+                // TODO DO SOMETHING
                 Log.d(
                     "HealthConnectManager", "Health connect not available"
                 )
@@ -119,72 +104,8 @@ class HealthConnectManager(private val context: Context) {
             .containsAll(permission)
     }
     
-    suspend fun requestMissingPermissions(permissions: Set<String>) {
-        val grantedPermissions =
-            healthConnectClient.permissionController.getGrantedPermissions()
-        val missingPermissions =
-            permissions.filterNot { it in grantedPermissions }
-        
-        if (missingPermissions.isNotEmpty()) {
-            val requestPermissionActivityContract =
-                PermissionController.createRequestPermissionResultContract()
-            
-            val launcher =
-                (context as ComponentActivity).registerForActivityResult(
-                    requestPermissionActivityContract
-                ) { granted ->
-                    if (granted.containsAll(missingPermissions)) {
-                        Log.d(
-                            "HealthConnect",
-                            "Missing permissions granted: $granted"
-                        )
-                    } else {
-                        Log.d(
-                            "HealthConnect",
-                            "Some permissions were denied: $granted"
-                        )
-                    }
-                }
-            launcher.launch(missingPermissions.toSet())
-        } else {
-            Log.d(
-                "HealthConnect",
-                "All necessary permissions are already granted."
-            )
-        }
-    }
-    
-    
-    suspend fun logGrantedPermissions() {
-        val grantedPermissions =
-            healthConnectClient.permissionController.getGrantedPermissions()
-        Log.d("HealthConnect", "Granted Permissions: $grantedPermissions")
-    }
-    
-    fun requestPermissionActivityContract(): ActivityResultContract<Set<String>, Set<String>> {
+    fun requestPermissionsActivityContract(): ActivityResultContract<Set<String>, Set<String>> {
         return PermissionController.createRequestPermissionResultContract()
-    }
-    
-    fun requestPermissions(permission: Set<String>) {
-        val requestPermissionActivityContract =
-            PermissionController.createRequestPermissionResultContract()
-        val requestPermissions =
-            (context as ComponentActivity).registerForActivityResult(
-                requestPermissionActivityContract
-            ) { granted ->
-                if (granted.containsAll(permission)) {
-                    Log.d(
-                        "HealthConnectManager",
-                        "Permissions granted: $granted"
-                    )
-                } else {
-                    Log.d(
-                        "HealthConnectManager",
-                        "Permissions not granted: $granted"
-                    )
-                }
-            }
-        requestPermissions.launch(permission)
     }
     
     suspend fun revokeAllPermissions() {
