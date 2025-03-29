@@ -1,4 +1,4 @@
-package com.example.healthmate.ui.main
+package com.example.healthmate.ui.screen.main
 
 import android.content.Context
 import android.hardware.Sensor

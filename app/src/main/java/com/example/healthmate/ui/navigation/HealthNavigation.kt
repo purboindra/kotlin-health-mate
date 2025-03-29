@@ -1,10 +1,10 @@
-package com.example.healthmate.navigation
+package com.example.healthmate.ui.navigation
 
 import androidx.compose.runtime.Composable
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
-import com.example.healthmate.ui.main.MainScreen
+import com.example.healthmate.ui.screen.main.MainScreen
 
 @Composable
 fun HealthNavigation(

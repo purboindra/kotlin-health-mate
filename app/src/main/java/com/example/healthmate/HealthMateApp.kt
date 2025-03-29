@@ -16,7 +16,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.health.connect.client.PermissionController
 import androidx.navigation.compose.rememberNavController
 import com.example.healthmate.data.HealthConnectManager
-import com.example.healthmate.navigation.HealthNavigation
+import com.example.healthmate.ui.navigation.HealthNavigation
 import com.example.healthmate.ui.theme.HealthMateTheme
 
 @Composable
