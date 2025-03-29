@@ -1,21 +1,17 @@
 package com.example.healthmate
 
-import android.annotation.SuppressLint
 import android.os.Bundle
-import android.util.Log
 import android.widget.Toast
 import androidx.activity.ComponentActivity
-import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.health.connect.client.HealthConnectClient
-import androidx.health.connect.client.PermissionController
 import com.example.healthmate.data.HealthConnectManager
-import kotlinx.coroutines.launch
+import dagger.hilt.android.AndroidEntryPoint
 
 private val TAG = "MainActivity"
 
+@AndroidEntryPoint
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
