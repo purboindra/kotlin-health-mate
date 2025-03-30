@@ -13,8 +13,10 @@ import androidx.navigation.compose.rememberNavController
 import androidx.navigation.createGraph
 import com.example.healthmate.ui.component.AppBottomNavigationBar
 import com.example.healthmate.ui.navigation.Screen
+import com.example.healthmate.ui.screen.exercise.ExerciseScreen
 import com.example.healthmate.ui.screen.goal.GoalScreen
 import com.example.healthmate.ui.screen.home.HomeScreen
+import com.example.healthmate.ui.screen.profile.ProfileScreen
 
 @Composable
 fun MainScreen(
@@ -57,6 +59,22 @@ fun MainScreen(
                 route = Screen.Home.route
             ) {
                 HomeScreen(modifier = Modifier.padding(paddingValues))
+            }
+            composable(
+                route = Screen.Exercise.route
+            ) {
+                ExerciseScreen(
+                    modifier = Modifier.padding(paddingValues),
+                    navHostController = bottomNavController
+                )
+            }
+            composable(
+                route = Screen.Profile.route
+            ) {
+                ProfileScreen(
+                    modifier = Modifier.padding(paddingValues),
+                    navHostController = bottomNavController
+                )
             }
         }
         
