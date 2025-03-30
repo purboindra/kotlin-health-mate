@@ -14,6 +14,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import com.example.healthmate.ui.component.HomeScreenHeader
+import com.example.healthmate.ui.component.TodayMeal
 import com.example.healthmate.ui.component.WeeklyHoursSchedule
 import com.example.healthmate.ui.component.WeeklyHoursScheduleItem
 import com.example.healthmate.ui.component.WeeklySchedule
@@ -101,6 +102,8 @@ fun HomeScreen(modifier: Modifier) {
                 modifier = modifier,
                 schedule = hoursSchedule
             )
+            18.VerticalSpacer()
+            TodayMeal()
         }
     }
 }
