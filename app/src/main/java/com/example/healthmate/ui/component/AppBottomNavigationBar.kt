@@ -111,7 +111,7 @@ fun AppBottomNavigationBar(
                 )
             },
             hasNew = false,
-            route = Screen.Exercise.route
+            route = Screen.Profile.route
         ),
     )
     
