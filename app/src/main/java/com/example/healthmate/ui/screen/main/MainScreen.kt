@@ -56,13 +56,12 @@ fun MainScreen(
             composable(
                 route = Screen.Home.route
             ) {
-                HomeScreen()
+                HomeScreen(modifier = Modifier.padding(paddingValues))
             }
         }
         
         NavHost(
             navController = bottomNavController,
-            modifier = Modifier.padding(paddingValues),
             graph = graph
         )
     }
