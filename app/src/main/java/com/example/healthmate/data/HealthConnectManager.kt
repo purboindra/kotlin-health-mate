@@ -22,8 +22,11 @@ import androidx.health.connect.client.records.StepsRecord
 import androidx.health.connect.client.records.TotalCaloriesBurnedRecord
 import androidx.health.connect.client.records.WeightRecord
 import androidx.health.connect.client.records.metadata.Metadata
+import androidx.health.connect.client.request.ReadRecordsRequest
+import androidx.health.connect.client.time.TimeRangeFilter
 import androidx.health.connect.client.units.Energy
 import androidx.health.connect.client.units.Mass
+import java.time.Instant
 import java.time.ZonedDateTime
 import kotlin.random.Random
 
@@ -115,6 +118,30 @@ class HealthConnectManager(private val context: Context) {
         healthConnectClient.permissionController.revokeAllPermissions()
     }
     
+    suspend fun readWeightInputs(
+        start: Instant,
+        end: Instant
+    ): List<WeightRecord> {
+        
+        Log.d(
+            "HealthConnectManager",
+            "readWeightInputs start: $start, end: $end"
+        )
+        
+        val request = ReadRecordsRequest(
+            WeightRecord::class,
+            timeRangeFilter = TimeRangeFilter.between(start, end)
+        )
+        val response = healthConnectClient.readRecords(request)
+        
+        Log.d(
+            "HealthConnectManager",
+            "readWeightInputs response: ${response.records}"
+        )
+        
+        return response.records
+    }
+    
     suspend fun writeWeightInput(weightInput: Double) {
         val time = ZonedDateTime.now().withNano(0)
         val weightRecord = WeightRecord(
@@ -132,7 +159,8 @@ class HealthConnectManager(private val context: Context) {
                 Toast.LENGTH_LONG
             ).show()
         } catch (e: Throwable) {
-            Toast.makeText(context, e.message.toString(), Toast.LENGTH_SHORT).show()
+            Toast.makeText(context, e.message.toString(), Toast.LENGTH_SHORT)
+                .show()
         }
     }
     
