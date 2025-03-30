@@ -2,14 +2,20 @@ package com.example.healthmate.ui.screen.home
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import com.example.healthmate.ui.component.HomeScreenHeader
+import com.example.healthmate.ui.component.WeeklyHoursSchedule
+import com.example.healthmate.ui.component.WeeklyHoursScheduleItem
 import com.example.healthmate.ui.component.WeeklySchedule
 import com.example.healthmate.ui.component.WeeklyScheduleItem
 import com.example.healthmate.util.VerticalSpacer
@@ -43,6 +49,40 @@ fun HomeScreen(modifier: Modifier) {
         )
     )
     
+    
+    val hoursSchedule = listOf(
+        WeeklyHoursScheduleItem(
+            label = "Sun",
+            hasComplete = false,
+            duration = 3,
+        ), WeeklyHoursScheduleItem(
+            label = "Mon",
+            hasComplete = true,
+            duration = 5,
+        ), WeeklyHoursScheduleItem(
+            label = "Tue",
+            hasComplete = true,
+            duration = 2,
+        ), WeeklyHoursScheduleItem(
+            label = "Wen",
+            hasComplete = false,
+            duration = 0,
+        ), WeeklyHoursScheduleItem(
+            label = "Thu",
+            hasComplete = true,
+            duration = 3,
+        ), WeeklyHoursScheduleItem(
+            label = "Fri",
+            hasComplete = false,
+            duration = 0
+        ),
+        WeeklyHoursScheduleItem(
+            label = "Thu",
+            hasComplete = false,
+            duration = 3,
+        )
+    )
+    
     LazyColumn(
         modifier = modifier
             .padding(horizontal = 16.dp)
@@ -56,6 +96,11 @@ fun HomeScreen(modifier: Modifier) {
             )
             24.VerticalSpacer()
             WeeklySchedule(modifier = Modifier, schedule = schedules)
+            18.VerticalSpacer()
+            WeeklyHoursSchedule(
+                modifier = modifier,
+                schedule = hoursSchedule
+            )
         }
     }
 }
