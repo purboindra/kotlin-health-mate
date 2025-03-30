@@ -15,7 +15,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.CheckCircle
 import androidx.compose.material3.Card
-import androidx.compose.material3.CardColors
+import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
@@ -27,7 +27,6 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.example.healthmate.ui.theme.BlackPrimary
-import com.example.healthmate.ui.theme.Gray
 import com.example.healthmate.ui.theme.GrayDark
 import com.example.healthmate.ui.theme.GrayLight
 import com.example.healthmate.ui.theme.GrayLighter
@@ -48,12 +47,9 @@ fun WeeklySchedule(
     Card(
         modifier = modifier
             .fillMaxWidth(),
-        shape = RoundedCornerShape(8.dp),
-        colors = CardColors(
-            contentColor = Color.Black,
-            containerColor = Color.White,
-            disabledContentColor = Color.White,
-            disabledContainerColor = Gray
+        colors = CardDefaults.cardColors(
+            contentColor = MaterialTheme.colorScheme.onSurface,
+            containerColor = Color.White
         )
     ) {
         Column(
