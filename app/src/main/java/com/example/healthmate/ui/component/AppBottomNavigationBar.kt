@@ -16,6 +16,7 @@ import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.graphics.Color
 import com.example.healthmate.data.BottomNavigationItem
 import com.example.healthmate.ui.navigation.Screen
 
@@ -55,7 +56,7 @@ fun AppBottomNavigationBar(
     selectedItem: String,
     onSelectedItem: (String) -> Unit
 ) {
-    NavigationBar {
+    NavigationBar(containerColor = Color.White) {
         items.forEachIndexed { _, bottomNavigationItem ->
             NavigationBarItem(
                 selected = selectedItem == bottomNavigationItem.route,
