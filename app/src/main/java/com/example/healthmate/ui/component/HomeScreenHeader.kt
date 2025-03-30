@@ -20,8 +20,6 @@ import com.example.healthmate.ui.icons.myiconpack.Analyticsup
 @Composable
 fun HomeScreenHeader(modifier: Modifier = Modifier) {
     Row(
-        modifier = modifier
-            .height(64.dp),
         horizontalArrangement = Arrangement.SpaceBetween,
         verticalAlignment = Alignment.Top
     ) {
