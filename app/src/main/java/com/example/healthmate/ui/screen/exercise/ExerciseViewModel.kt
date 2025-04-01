@@ -1,5 +1,7 @@
 package com.example.healthmate.ui.screen.exercise
 
+import android.util.Log
+import androidx.health.connect.client.HealthConnectFeatures
 import androidx.health.connect.client.records.WeightRecord
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -25,8 +27,20 @@ class ExerciseViewModel @Inject constructor(
     private val _weightList = MutableStateFlow<List<WeightRecord>>(emptyList())
     val weightList = _weightList.asStateFlow()
     
+    private val _backgroundReadAvailable = MutableStateFlow(false)
+    val backgroundReadAvailable = _backgroundReadAvailable.asStateFlow()
+    
     fun onWeightChange(weight: String) {
         _weightQuery.value = weight
+    }
+    
+    init {
+        _backgroundReadAvailable.value = healthConnectManager.isFeatureAvailable(
+            HealthConnectFeatures.FEATURE_READ_HEALTH_DATA_IN_BACKGROUND
+        )
+        
+        Log.d("ExerciseViewModel", "backgroundReadAvailable: ${backgroundReadAvailable.value}")
+        
     }
     
     fun formatInstantToDate(

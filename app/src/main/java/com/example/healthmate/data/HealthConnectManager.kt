@@ -12,6 +12,7 @@ import androidx.activity.result.contract.ActivityResultContract
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.health.connect.client.HealthConnectClient
 import androidx.health.connect.client.HealthConnectClient.Companion.SDK_UNAVAILABLE
+import androidx.health.connect.client.HealthConnectFeatures
 import androidx.health.connect.client.PermissionController
 import androidx.health.connect.client.permission.HealthPermission
 import androidx.health.connect.client.records.DistanceRecord
@@ -32,6 +33,7 @@ import kotlin.random.Random
 
 // The minimum android level that can use Health Connect
 const val MIN_SUPPORTED_SDK = Build.VERSION_CODES.O_MR1
+
 
 class HealthConnectManager(private val context: Context) {
     
@@ -119,13 +121,11 @@ class HealthConnectManager(private val context: Context) {
     }
     
     suspend fun readWeightInputs(
-        start: Instant,
-        end: Instant
+        start: Instant, end: Instant
     ): List<WeightRecord> {
         
         Log.d(
-            "HealthConnectManager",
-            "readWeightInputs start: $start, end: $end"
+            "HealthConnectManager", "readWeightInputs start: $start, end: $end"
         )
         
         val request = ReadRecordsRequest(
@@ -154,9 +154,7 @@ class HealthConnectManager(private val context: Context) {
         try {
             healthConnectClient.insertRecords(records)
             Toast.makeText(
-                context,
-                "Successfully insert records!",
-                Toast.LENGTH_LONG
+                context, "Successfully insert records!", Toast.LENGTH_LONG
             ).show()
         } catch (e: Throwable) {
             Toast.makeText(context, e.message.toString(), Toast.LENGTH_SHORT)
@@ -175,16 +173,14 @@ class HealthConnectManager(private val context: Context) {
                     endZoneOffset = end.offset,
                     exerciseType = ExerciseSessionRecord.EXERCISE_TYPE_RUNNING,
                     title = "My Run #${Random.nextInt(0, 60)}"
-                ),
-                StepsRecord(
+                ), StepsRecord(
                     metadata = Metadata.manualEntry(),
                     startTime = start.toInstant(),
                     startZoneOffset = start.offset,
                     endTime = end.toInstant(),
                     endZoneOffset = end.offset,
                     count = (1000 + 1000 * Random.nextInt(3)).toLong()
-                ),
-                TotalCaloriesBurnedRecord(
+                ), TotalCaloriesBurnedRecord(
                     metadata = Metadata.manualEntry(),
                     startTime = start.toInstant(),
                     startZoneOffset = start.offset,
@@ -219,5 +215,9 @@ class HealthConnectManager(private val context: Context) {
             endZoneOffset = sessionEndTime.offset,
             samples = samples
         )
+    }
+    
+    fun isFeatureAvailable(feature: Int): Boolean {
+        return healthConnectClient.features.getFeatureStatus(feature) == HealthConnectFeatures.FEATURE_STATUS_AVAILABLE
     }
 }
