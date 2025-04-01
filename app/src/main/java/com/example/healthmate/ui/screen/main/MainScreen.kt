@@ -11,6 +11,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.createGraph
+import com.example.healthmate.data.HealthConnectManager
 import com.example.healthmate.ui.component.AppBottomNavigationBar
 import com.example.healthmate.ui.navigation.Screen
 import com.example.healthmate.ui.screen.exercise.ExerciseScreen
@@ -65,7 +66,7 @@ fun MainScreen(
             ) {
                 ExerciseScreen(
                     modifier = Modifier.padding(paddingValues),
-                    navHostController = bottomNavController
+                    navHostController = bottomNavController,
                 )
             }
             composable(
