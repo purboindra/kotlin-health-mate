@@ -14,6 +14,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -23,14 +24,11 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
-import androidx.health.connect.client.records.WeightRecord
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
-import com.example.healthmate.data.HealthConnectManager
 import com.example.healthmate.ui.theme.GrayDark
 import com.example.healthmate.util.HorizontalSpacer
 import com.example.healthmate.util.VerticalSpacer
-import kotlinx.coroutines.launch
-import java.time.ZonedDateTime
 
 data class WeightData(
     val kg: String
@@ -40,43 +38,27 @@ data class WeightData(
 fun ExerciseScreen(
     modifier: Modifier = Modifier,
     navHostController: NavHostController,
-    healthConnectManager: HealthConnectManager
+    exerciseViewModel: ExerciseViewModel = hiltViewModel()
 ) {
     
     val coroutineScope = rememberCoroutineScope()
-    
-    var weight by remember { mutableStateOf("") }
-    var weightList by remember { mutableStateOf<List<WeightRecord>>(emptyList()) }
+    val weight by exerciseViewModel.weightQuery.collectAsState()
+    val weightList by exerciseViewModel.weightList.collectAsState()
     var loading by remember { mutableStateOf(false) }
-    
-    
-    fun addWeight() {
-        loading = true
-        coroutineScope.launch {
-            healthConnectManager.writeWeightInput(weight.toDouble())
-            val start = ZonedDateTime.now().toInstant()
-            val end = ZonedDateTime.now().toInstant()
-            weightList =
-                healthConnectManager.readWeightInputs(start = start, end = end)
-        }
-        loading = false
-    }
     
     LaunchedEffect(Unit) {
         loading = true
-        val start = ZonedDateTime.now().toInstant()
-        val end = ZonedDateTime.now().toInstant()
-        healthConnectManager.readWeightInputs(start = start, end = end)
+        exerciseViewModel.getWeight()
         loading = false
     }
     
     LazyColumn(modifier = Modifier.safeContentPadding()) {
         item {
-            Row (verticalAlignment = Alignment.CenterVertically) {
+            Row(verticalAlignment = Alignment.CenterVertically) {
                 OutlinedTextField(
                     value = weight,
                     onValueChange = {
-                        weight = it
+                        exerciseViewModel.onWeightChange(it)
                     },
                     placeholder = {
                         Text("Weight")
@@ -94,7 +76,7 @@ fun ExerciseScreen(
                 )
                 8.HorizontalSpacer()
                 ElevatedButton(onClick = {
-                    addWeight()
+                    exerciseViewModel.writeWeightInput()
                 }) {
                     Text("Add")
                 }
@@ -104,7 +86,9 @@ fun ExerciseScreen(
                 CircularProgressIndicator()
             } else Column {
                 if (weightList.isEmpty()) Text("No data")
-                else weightList.forEachIndexed { index, weightRecord -> Text("Kg: ${weightRecord.weight}") }
+                else weightList.forEachIndexed { index, weightRecord ->
+                    val time = exerciseViewModel.formatInstantToDate(weightRecord.time, pattern = "E, MMM dd yyyy HH:mm:ss a", timeZone = "Asia/Jakarta")
+                    Text("Kg: ${weightRecord.weight} $time") }
             }
         }
     }
