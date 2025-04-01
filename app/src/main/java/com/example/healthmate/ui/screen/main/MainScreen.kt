@@ -23,6 +23,7 @@ import com.example.healthmate.ui.screen.profile.ProfileScreen
 fun MainScreen(
     mainViewModel: MainViewModel = hiltViewModel(),
     navHostController: NavHostController,
+    healthConnectManager: HealthConnectManager
 ) {
     
     val bottomNavController = rememberNavController()
@@ -67,6 +68,7 @@ fun MainScreen(
                 ExerciseScreen(
                     modifier = Modifier.padding(paddingValues),
                     navHostController = bottomNavController,
+                    healthConnectManager = healthConnectManager
                 )
             }
             composable(

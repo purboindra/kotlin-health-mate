@@ -1,5 +1,7 @@
 package com.example.healthmate.ui.screen.exercise
 
+import android.util.Log
+import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.safeContentPadding
@@ -24,8 +26,10 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
+import androidx.health.connect.client.permission.HealthPermission.Companion.PERMISSION_READ_HEALTH_DATA_IN_BACKGROUND
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
+import com.example.healthmate.data.HealthConnectManager
 import com.example.healthmate.ui.theme.GrayDark
 import com.example.healthmate.util.HorizontalSpacer
 import com.example.healthmate.util.VerticalSpacer
@@ -38,13 +42,21 @@ data class WeightData(
 fun ExerciseScreen(
     modifier: Modifier = Modifier,
     navHostController: NavHostController,
-    exerciseViewModel: ExerciseViewModel = hiltViewModel()
+    exerciseViewModel: ExerciseViewModel = hiltViewModel(),
+    healthConnectManager: HealthConnectManager
 ) {
     
     val coroutineScope = rememberCoroutineScope()
     val weight by exerciseViewModel.weightQuery.collectAsState()
     val weightList by exerciseViewModel.weightList.collectAsState()
     var loading by remember { mutableStateOf(false) }
+    val backgroundReadAvailable by exerciseViewModel.backgroundReadAvailable.collectAsState()
+    
+    val permissionLauncher = rememberLauncherForActivityResult(
+        healthConnectManager.requestPermissionsActivityContract()
+    ) {
+        Log.d("HealthConnect", "Permissions granted successfully!")
+    }
     
     LaunchedEffect(Unit) {
         loading = true
@@ -87,8 +99,22 @@ fun ExerciseScreen(
             } else Column {
                 if (weightList.isEmpty()) Text("No data")
                 else weightList.forEachIndexed { index, weightRecord ->
-                    val time = exerciseViewModel.formatInstantToDate(weightRecord.time, pattern = "E, MMM dd yyyy HH:mm:ss a", timeZone = "Asia/Jakarta")
-                    Text("Kg: ${weightRecord.weight} $time") }
+                    val time = exerciseViewModel.formatInstantToDate(
+                        weightRecord.time,
+                        pattern = "E, MMM dd yyyy HH:mm:ss a",
+                        timeZone = "Asia/Jakarta"
+                    )
+                    Text("${"%.1f".format(weightRecord.weight.inKilograms)} kilograms $time")
+                }
+                if (!backgroundReadAvailable) ElevatedButton(
+                    onClick = {
+                        permissionLauncher.launch(
+                            setOf(PERMISSION_READ_HEALTH_DATA_IN_BACKGROUND)
+                        )
+                    }
+                ) {
+                    Text("Request Background Read")
+                }
             }
         }
     }

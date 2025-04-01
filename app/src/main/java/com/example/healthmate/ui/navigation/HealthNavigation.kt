@@ -20,6 +20,7 @@ fun HealthNavigation(
         ) {
             MainScreen(
                 navHostController = navHostController,
+                healthConnectManager = healthConnectManager
             )
         }
     }
