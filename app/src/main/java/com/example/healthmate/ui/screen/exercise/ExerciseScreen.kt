@@ -35,6 +35,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import com.example.healthmate.data.HealthConnectManager
 import com.example.healthmate.ui.component.CardioInformation
+import com.example.healthmate.ui.component.DailyGoal
 import com.example.healthmate.ui.component.ProgressCircle
 import com.example.healthmate.ui.component.RowIconWithText
 import com.example.healthmate.ui.icons.MyIconPack
@@ -150,6 +151,8 @@ fun ExerciseScreen(
             12.VerticalSpacer()
             
             CardioInformation()
+            
+            DailyGoal()
             
         }
     }
