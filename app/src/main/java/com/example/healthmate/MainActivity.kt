@@ -7,6 +7,7 @@ import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.health.connect.client.HealthConnectClient
 import com.example.healthmate.data.HealthConnectManager
+import com.example.healthmate.ui.component.HealthConnectUnavailable
 import dagger.hilt.android.AndroidEntryPoint
 
 private val TAG = "MainActivity"
@@ -23,6 +24,8 @@ class MainActivity : ComponentActivity() {
             HealthConnectManager(context)
         
         val status = HealthConnectClient.getSdkStatus(context)
+        val healthConnectUnavailable =
+            status != HealthConnectClient.SDK_AVAILABLE
         
         if (status != HealthConnectClient.SDK_AVAILABLE) {
             Toast.makeText(
@@ -30,11 +33,14 @@ class MainActivity : ComponentActivity() {
                 "Health Connect not available!",
                 Toast.LENGTH_LONG
             ).show()
-            return
         }
         
         setContent {
-            HealthMateApp(healthConnectManager)
+            if (healthConnectUnavailable) {
+                HealthConnectUnavailable()
+            } else {
+                HealthMateApp(healthConnectManager)
+            }
         }
     }
 }
