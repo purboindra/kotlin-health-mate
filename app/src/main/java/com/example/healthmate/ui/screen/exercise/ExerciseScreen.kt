@@ -152,6 +152,8 @@ fun ExerciseScreen(
             
             CardioInformation()
             
+            12.VerticalSpacer()
+            
             DailyGoal()
             
         }
