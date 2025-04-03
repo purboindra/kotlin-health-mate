@@ -145,7 +145,7 @@ fun ExerciseScreen(
                 )
             }
             
-            8.VerticalSpacer()
+            12.VerticalSpacer()
             
             CardioInformation()
             
