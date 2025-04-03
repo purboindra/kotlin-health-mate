@@ -14,7 +14,6 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.outlined.FavoriteBorder
 import androidx.compose.material.icons.outlined.Info
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -38,6 +37,9 @@ import com.example.healthmate.data.HealthConnectManager
 import com.example.healthmate.ui.component.CardioInformation
 import com.example.healthmate.ui.component.ProgressCircle
 import com.example.healthmate.ui.component.RowIconWithText
+import com.example.healthmate.ui.icons.MyIconPack
+import com.example.healthmate.ui.icons.myiconpack.Cardio
+import com.example.healthmate.ui.icons.myiconpack.Foot
 import com.example.healthmate.ui.theme.GrayDark
 import com.example.healthmate.ui.theme.MintGreen
 import com.example.healthmate.util.HorizontalSpacer
@@ -127,7 +129,7 @@ fun ExerciseScreen(
                 modifier = Modifier.fillMaxWidth()
             ) {
                 RowIconWithText(
-                    icon = Icons.Outlined.FavoriteBorder,
+                    icon = MyIconPack.Cardio,
                     text = "Poin Kardio",
                     contentDescription = "Poin Kardio",
                     style = MaterialTheme.typography.titleSmall.copy(
@@ -136,7 +138,7 @@ fun ExerciseScreen(
                 )
                 17.HorizontalSpacer()
                 RowIconWithText(
-                    icon = Icons.Outlined.FavoriteBorder,
+                    icon = MyIconPack.Foot,
                     text = "Langkah",
                     contentDescription = "Langkah",
                     style = MaterialTheme.typography.titleSmall.copy(
