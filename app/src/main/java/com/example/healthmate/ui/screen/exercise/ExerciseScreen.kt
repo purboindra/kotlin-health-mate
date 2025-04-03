@@ -35,6 +35,7 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import com.example.healthmate.data.HealthConnectManager
+import com.example.healthmate.ui.component.CardioInformation
 import com.example.healthmate.ui.component.ProgressCircle
 import com.example.healthmate.ui.component.RowIconWithText
 import com.example.healthmate.ui.theme.GrayDark
@@ -133,7 +134,7 @@ fun ExerciseScreen(
                         fontWeight = FontWeight.SemiBold
                     ),
                 )
-                8.HorizontalSpacer()
+                17.HorizontalSpacer()
                 RowIconWithText(
                     icon = Icons.Outlined.FavoriteBorder,
                     text = "Langkah",
@@ -143,6 +144,11 @@ fun ExerciseScreen(
                     ),
                 )
             }
+            
+            8.VerticalSpacer()
+            
+            CardioInformation()
+            
         }
     }
 }
