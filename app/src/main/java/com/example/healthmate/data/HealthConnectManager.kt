@@ -14,6 +14,7 @@ import androidx.health.connect.client.HealthConnectClient
 import androidx.health.connect.client.HealthConnectClient.Companion.SDK_UNAVAILABLE
 import androidx.health.connect.client.HealthConnectFeatures
 import androidx.health.connect.client.PermissionController
+import androidx.health.connect.client.changes.Change
 import androidx.health.connect.client.permission.HealthPermission
 import androidx.health.connect.client.records.DistanceRecord
 import androidx.health.connect.client.records.ExerciseSessionRecord
@@ -23,10 +24,15 @@ import androidx.health.connect.client.records.StepsRecord
 import androidx.health.connect.client.records.TotalCaloriesBurnedRecord
 import androidx.health.connect.client.records.WeightRecord
 import androidx.health.connect.client.records.metadata.Metadata
+import androidx.health.connect.client.request.ChangesTokenRequest
 import androidx.health.connect.client.request.ReadRecordsRequest
+import androidx.health.connect.client.response.ChangesResponse
 import androidx.health.connect.client.time.TimeRangeFilter
 import androidx.health.connect.client.units.Energy
 import androidx.health.connect.client.units.Mass
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.flow
+import java.io.IOException
 import java.time.Instant
 import java.time.ZonedDateTime
 import kotlin.random.Random
@@ -57,11 +63,6 @@ class HealthConnectManager(private val context: Context) {
         HealthPermission.getReadPermission(WeightRecord::class),
         HealthPermission.getWritePermission(WeightRecord::class),
     )
-    
-    val sensorManager =
-        context.getSystemService(Context.SENSOR_SERVICE) as SensorManager
-    val stepSensor = sensorManager.getDefaultSensor(Sensor.TYPE_STEP_COUNTER)
-    val heartRateSensor = sensorManager.getDefaultSensor(Sensor.TYPE_HEART_RATE)
     
     fun promptUpdateHealthConnect() {
         val intent = Intent(Intent.ACTION_VIEW).apply {
@@ -220,4 +221,32 @@ class HealthConnectManager(private val context: Context) {
     fun isFeatureAvailable(feature: Int): Boolean {
         return healthConnectClient.features.getFeatureStatus(feature) == HealthConnectFeatures.FEATURE_STATUS_AVAILABLE
     }
+    
+    suspend fun getChangesToken(): String {
+        return healthConnectClient.getChangesToken(
+            ChangesTokenRequest(
+                setOf(
+                    WeightRecord::class
+                )
+            )
+        )
+    }
+    
+    fun getChanges(token: String): Flow<ChangesMessage> = flow {
+        var nextChangesToken = token
+        do {
+            val response = healthConnectClient.getChanges(nextChangesToken)
+            if (response.changesTokenExpired) {
+                throw IOException("Changes token has expired")
+            }
+            emit(ChangesMessage.ChangeLists(response.changes))
+            nextChangesToken = response.nextChangesToken
+        } while (response.hasMore)
+        emit(ChangesMessage.NoMoreChanges(nextChangesToken))
+    }
+}
+
+sealed class ChangesMessage {
+    data class NoMoreChanges(val nextChangesToken: String) : ChangesMessage()
+    data class ChangeLists(val changes: List<Change>) : ChangesMessage()
 }
