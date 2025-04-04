@@ -28,7 +28,7 @@ fun NonActiveActivityCard(
     Card(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(horizontal = 12.dp),
+            .padding(12.dp),
         colors = CardDefaults.cardColors(
             containerColor = Color.White
         ),
