@@ -81,9 +81,7 @@ fun HomeScreen(modifier: Modifier) {
     )
     
     LazyColumn(
-        modifier = modifier
-            .padding(horizontal = 16.dp)
-            .fillMaxSize()
+    
     ) {
         item {
             HomeScreenHeader(
