@@ -4,8 +4,8 @@ import android.content.Intent
 import android.net.Uri
 import android.provider.Settings
 import android.util.Log
-import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
@@ -20,11 +20,10 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -36,12 +35,14 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import com.example.healthmate.data.HealthConnectManager
+import com.example.healthmate.ui.component.ActivityHealthDialogContent
 import com.example.healthmate.ui.component.CardioInformation
 import com.example.healthmate.ui.component.DailyGoal
 import com.example.healthmate.ui.component.NonActiveActivityCard
 import com.example.healthmate.ui.component.ProgressCircle
 import com.example.healthmate.ui.component.RowIconWithText
 import com.example.healthmate.ui.component.SyncWithHealthConnectCard
+import com.example.healthmate.ui.dialog.ActivityHealthMateDialog
 import com.example.healthmate.ui.icons.MyIconPack
 import com.example.healthmate.ui.icons.myiconpack.Cardio
 import com.example.healthmate.ui.icons.myiconpack.Foot
@@ -61,32 +62,37 @@ fun ExerciseScreen(
     exerciseViewModel: ExerciseViewModel = hiltViewModel(),
     healthConnectManager: HealthConnectManager,
 ) {
-    
-    val coroutineScope = rememberCoroutineScope()
-    val weight by exerciseViewModel.weightQuery.collectAsState()
-    val weightList by exerciseViewModel.weightList.collectAsState()
     var loading by remember { mutableStateOf(false) }
-    val backgroundReadAvailable by exerciseViewModel.backgroundReadAvailable.collectAsState()
-    val historyReadAvailable by exerciseViewModel.historyReadAvailable.collectAsState()
     
     val configuration = LocalConfiguration.current
     val screenHeight = configuration.screenHeightDp.dp
-    val screenWidth = configuration.screenWidthDp.dp
-    
-    val outerSize = screenHeight * 0.25f
-    val innerSize = screenHeight * 0.20f
     val context = LocalContext.current
     
-    val permissionLauncher = rememberLauncherForActivityResult(
-        healthConnectManager.requestPermissionsActivityContract()
-    ) {
-        Log.d("HealthConnect", "Permissions granted successfully!")
-    }
+    var showDialog by remember { mutableStateOf(false) }
+    var contentIndex by remember { mutableIntStateOf(0) }
     
     LaunchedEffect(Unit) {
         loading = true
         exerciseViewModel.getWeight()
         loading = false
+    }
+    
+    if (showDialog) {
+        ActivityHealthMateDialog(
+            onDismiss = {
+                showDialog = false
+            },
+            onButtonTap = {
+                contentIndex++
+                Log.d("ExerciseScreen", "Content Index: $contentIndex")
+            },
+            buttonText = if (contentIndex == 2) "Selesai" else "Berikutnya",
+            content = {
+                ActivityHealthDialogContent(
+                    index = contentIndex
+                )
+            }
+        )
     }
     
     LazyColumn {
@@ -106,7 +112,12 @@ fun ExerciseScreen(
                         Icons.Outlined.Info,
                         contentDescription = "Info",
                         tint = GrayDark,
-                        modifier = Modifier.size(24.dp)
+                        modifier = Modifier
+                            .size(24.dp)
+                            .clickable(onClick = {
+                                contentIndex = 0
+                                showDialog = true
+                            })
                     )
                     8.HorizontalSpacer()
                     Box(
@@ -169,6 +180,8 @@ fun ExerciseScreen(
                     context.startActivity(intent)
                 }
             )
+            
+            
             
             24.VerticalSpacer()
         }
