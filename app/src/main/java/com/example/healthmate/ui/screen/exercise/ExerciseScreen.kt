@@ -1,16 +1,16 @@
 package com.example.healthmate.ui.screen.exercise
 
+import android.content.Intent
+import android.net.Uri
+import android.provider.Settings
 import android.util.Log
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.safeContentPadding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.CircleShape
@@ -30,6 +30,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.platform.LocalConfiguration
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -37,6 +38,7 @@ import androidx.navigation.NavHostController
 import com.example.healthmate.data.HealthConnectManager
 import com.example.healthmate.ui.component.CardioInformation
 import com.example.healthmate.ui.component.DailyGoal
+import com.example.healthmate.ui.component.NonActiveActivityCard
 import com.example.healthmate.ui.component.ProgressCircle
 import com.example.healthmate.ui.component.RowIconWithText
 import com.example.healthmate.ui.component.SyncWithHealthConnectCard
@@ -73,7 +75,7 @@ fun ExerciseScreen(
     
     val outerSize = screenHeight * 0.25f
     val innerSize = screenHeight * 0.20f
-    
+    val context = LocalContext.current
     
     val permissionLauncher = rememberLauncherForActivityResult(
         healthConnectManager.requestPermissionsActivityContract()
@@ -150,16 +152,25 @@ fun ExerciseScreen(
             
             CardioInformation()
             
-            12.VerticalSpacer()
-            
             DailyGoal()
-            
-            12.VerticalSpacer()
             
             SyncWithHealthConnectCard()
             
-            12.VerticalSpacer()
+            NonActiveActivityCard(
+                onOpenSettings = {
+                    val intent =
+                        Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS).apply {
+                            data = Uri.fromParts(
+                                "package",
+                                context.packageName,
+                                null
+                            )
+                        }
+                    context.startActivity(intent)
+                }
+            )
             
+            24.VerticalSpacer()
         }
     }
 }
