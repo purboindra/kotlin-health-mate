@@ -6,6 +6,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -38,6 +39,7 @@ import com.example.healthmate.ui.component.CardioInformation
 import com.example.healthmate.ui.component.DailyGoal
 import com.example.healthmate.ui.component.ProgressCircle
 import com.example.healthmate.ui.component.RowIconWithText
+import com.example.healthmate.ui.component.SyncWithHealthConnectCard
 import com.example.healthmate.ui.icons.MyIconPack
 import com.example.healthmate.ui.icons.myiconpack.Cardio
 import com.example.healthmate.ui.icons.myiconpack.Foot
@@ -85,11 +87,7 @@ fun ExerciseScreen(
         loading = false
     }
     
-    LazyColumn(
-        modifier = Modifier
-            .safeContentPadding()
-            .padding(horizontal = 16.dp),
-    ) {
+    LazyColumn {
         item {
             
             val heightProgressCircle = screenHeight * 0.25f
@@ -155,6 +153,12 @@ fun ExerciseScreen(
             12.VerticalSpacer()
             
             DailyGoal()
+            
+            12.VerticalSpacer()
+            
+            SyncWithHealthConnectCard()
+            
+            12.VerticalSpacer()
             
         }
     }
