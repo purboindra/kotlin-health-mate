@@ -83,7 +83,11 @@ fun ExerciseScreen(
                 showDialog = false
             },
             onButtonTap = {
-                contentIndex++
+                if (contentIndex == 2) {
+                    showDialog = false
+                } else {
+                    contentIndex++
+                }
                 Log.d("ExerciseScreen", "Content Index: $contentIndex")
             },
             buttonText = if (contentIndex == 2) "Selesai" else "Berikutnya",
