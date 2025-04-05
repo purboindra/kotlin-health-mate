@@ -19,6 +19,7 @@ import androidx.compose.material.icons.outlined.Info
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
@@ -75,6 +76,12 @@ fun ExerciseScreen(
         loading = true
         exerciseViewModel.getWeight()
         loading = false
+    }
+    
+    DisposableEffect(Unit) {
+        onDispose {
+            exerciseViewModel.unregisterStepListener()
+        }
     }
     
     if (showDialog) {

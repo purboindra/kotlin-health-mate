@@ -9,7 +9,7 @@ import android.util.Log
 
 const val TAG = "SensorManager"
 
-class SensorManager(private val context: Context) {
+class SensorManager(context: Context) {
     
     private val sensorManager =
         context.getSystemService(Context.SENSOR_SERVICE) as SensorManager
@@ -37,8 +37,11 @@ class SensorManager(private val context: Context) {
     
     private val stepListener = object : SensorEventListener {
         override fun onSensorChanged(event: SensorEvent?) {
-            val steps = event?.values?.get(0)?.toInt() ?: 0
-            Log.d(TAG, "onSensorChanged: $steps")
+            val sensorStepCount = event?.values?.firstOrNull()
+            sensorStepCount?.let {
+                Log.d(TAG, "onSensorChanged: ${it.toInt()}")
+            }
+            
         }
         
         override fun onAccuracyChanged(p0: Sensor?, p1: Int) {
@@ -53,6 +56,11 @@ class SensorManager(private val context: Context) {
             stepCounter,
             SensorManager.SENSOR_DELAY_NORMAL
         )
+    }
+    
+    fun unregisterListener() {
+        Log.d(TAG, "unRegisterListener")
+        sensorManager.unregisterListener(stepListener)
     }
     
 }

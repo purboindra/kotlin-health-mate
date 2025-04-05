@@ -19,6 +19,8 @@ import java.time.ZonedDateTime
 import java.time.format.DateTimeFormatter
 import javax.inject.Inject
 
+const val TAG = "ExerciseViewModel"
+
 @HiltViewModel
 class ExerciseViewModel @Inject constructor(
     private val healthConnectManager: HealthConnectManager,
@@ -55,6 +57,8 @@ class ExerciseViewModel @Inject constructor(
         )
         
         val hasSensor = sensorManager.hasStepSensor()
+        
+        Log.d(TAG, "hasSensor: $hasSensor")
         
         if (hasSensor) {
             sensorManager.registerListener()
@@ -122,9 +126,11 @@ class ExerciseViewModel @Inject constructor(
                     }
                 }
             }
-            
-            
         }
+    }
+    
+    fun unregisterStepListener() {
+        sensorManager.unregisterListener()
     }
     
 }
