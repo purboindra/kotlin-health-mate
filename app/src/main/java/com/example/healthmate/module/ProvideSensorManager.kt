@@ -15,6 +15,6 @@ object ProvideSensorManager {
     @Provides
     @Singleton
     fun provideSensorManager(@ApplicationContext context: Context): SensorManager {
-        return SensorManager(context)
+        return SensorManager(context, {})
     }
 }
