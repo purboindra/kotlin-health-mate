@@ -9,11 +9,14 @@ import android.util.Log
 
 const val TAG = "SensorManager"
 
-class SensorManager(context: Context) {
+class SensorManager(
+    context: Context, private val onStepUpdate: (Int) -> Unit
+) {
+    
+    var initialStep: Int? = null
     
     private val sensorManager =
         context.getSystemService(Context.SENSOR_SERVICE) as SensorManager
-    val heartRateSensor = sensorManager.getDefaultSensor(Sensor.TYPE_HEART_RATE)
     
     private val stepCounter =
         sensorManager.getDefaultSensor(Sensor.TYPE_STEP_COUNTER)
@@ -37,30 +40,35 @@ class SensorManager(context: Context) {
     
     private val stepListener = object : SensorEventListener {
         override fun onSensorChanged(event: SensorEvent?) {
-            val sensorStepCount = event?.values?.firstOrNull()
-            sensorStepCount?.let {
-                Log.d(TAG, "onSensorChanged: ${it.toInt()}")
-            }
-            
+            val steps = event?.values?.firstOrNull()?.toInt() ?: return
+            if (initialStep == null) initialStep = steps
+            val stepsToday = steps - (initialStep ?: steps)
+            /// Pass the step count to the UI
+            Log.d(TAG, "onSensorChanged: $stepsToday")
+            onStepUpdate(stepsToday)
         }
         
-        override fun onAccuracyChanged(p0: Sensor?, p1: Int) {
-            Log.d(TAG, "onAccuracyChanged")
-        }
+        override fun onAccuracyChanged(sensor: Sensor?, accuracy: Int) {}
     }
+    
     
     fun registerListener() {
         Log.d(TAG, "registerListener")
-        sensorManager.registerListener(
-            stepListener,
-            stepCounter,
-            SensorManager.SENSOR_DELAY_NORMAL
-        )
+        stepCounter?.let {
+            Log.d(
+                TAG,
+                "stepCounter registerListener: ${it.name} - ${it.type} firing"
+            )
+            sensorManager.registerListener(
+                stepListener,
+                stepCounter,
+                SensorManager.SENSOR_DELAY_NORMAL
+            )
+        }
     }
     
     fun unregisterListener() {
         Log.d(TAG, "unRegisterListener")
         sensorManager.unregisterListener(stepListener)
     }
-    
 }
