@@ -1,9 +1,8 @@
 package com.example.healthmate.data
 
+import android.annotation.SuppressLint
 import android.content.Context
 import android.content.Intent
-import android.hardware.Sensor
-import android.hardware.SensorManager
 import android.net.Uri
 import android.os.Build
 import android.util.Log
@@ -26,7 +25,6 @@ import androidx.health.connect.client.records.WeightRecord
 import androidx.health.connect.client.records.metadata.Metadata
 import androidx.health.connect.client.request.ChangesTokenRequest
 import androidx.health.connect.client.request.ReadRecordsRequest
-import androidx.health.connect.client.response.ChangesResponse
 import androidx.health.connect.client.time.TimeRangeFilter
 import androidx.health.connect.client.units.Energy
 import androidx.health.connect.client.units.Mass
@@ -163,7 +161,13 @@ class HealthConnectManager(private val context: Context) {
         }
     }
     
-    suspend fun writeExerciseSession(start: ZonedDateTime, end: ZonedDateTime) {
+    @SuppressLint("RestrictedApi")
+    suspend fun writeExerciseSession(
+        start: ZonedDateTime,
+        end: ZonedDateTime,
+        steps: Int,
+        calories: Double
+    ) {
         healthConnectClient.insertRecords(
             listOf(
                 ExerciseSessionRecord(
@@ -180,14 +184,14 @@ class HealthConnectManager(private val context: Context) {
                     startZoneOffset = start.offset,
                     endTime = end.toInstant(),
                     endZoneOffset = end.offset,
-                    count = (1000 + 1000 * Random.nextInt(3)).toLong()
+                    count = steps.toLong()
                 ), TotalCaloriesBurnedRecord(
                     metadata = Metadata.manualEntry(),
                     startTime = start.toInstant(),
                     startZoneOffset = start.offset,
                     endTime = end.toInstant(),
                     endZoneOffset = end.offset,
-                    energy = Energy.calories((140 + Random.nextInt(20)) * 0.01)
+                    energy = Energy.calories(calories)
                 )
             )
         )
