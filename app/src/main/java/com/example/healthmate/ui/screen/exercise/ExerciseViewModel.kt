@@ -13,6 +13,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
+import java.time.Duration
 import java.time.Instant
 import java.time.ZoneId
 import java.time.ZonedDateTime
@@ -41,6 +42,67 @@ class ExerciseViewModel @Inject constructor(
     
     private val _changeMessageToken = MutableStateFlow<ChangesMessage?>(null)
     val changeMessageToken = _changeMessageToken.asStateFlow()
+    
+    private val _stepsCount = MutableStateFlow(0)
+    val stepsCount = _stepsCount.asStateFlow()
+    
+    private val _distanceMeters = MutableStateFlow(0f)
+    val distanceMeters = _distanceMeters.asStateFlow()
+    
+    private val _calories = MutableStateFlow(0f)
+    val calories = _calories.asStateFlow()
+    
+    private val _durationMovement = MutableStateFlow(0L)
+    val durationMovement = _durationMovement.asStateFlow()
+    
+    private var _startTime: ZonedDateTime? = null
+    
+    /// TODO: Use real value
+    val strideLengthMeters = 0.75f
+    
+    fun updateStepCount(steps: Int) {
+        
+        if (steps == 0) return
+        
+        _stepsCount.value = steps
+        _distanceMeters.value = steps * strideLengthMeters
+        
+        if (_startTime == null && steps > 0) {
+            _startTime = ZonedDateTime.now()
+        }
+        
+        _startTime?.let {
+            val time = ZonedDateTime.now()
+            val duration = Duration.between(it, time)
+            _durationMovement.value = duration.toMinutes()
+            updateCaloriesBurned()
+        }
+        
+        
+        Log.d(
+            "ExerciseViewModel",
+            "updateStepCount: steps: $steps, distance: ${_distanceMeters.value}, duration: ${_durationMovement.value}, calories: ${_calories.value}, start time: $_startTime"
+        )
+    }
+    
+    fun updateCaloriesBurned() {
+        val distanceInKm = _distanceMeters.value / 1000f
+        val weightInKg =
+            (_weightList.value.firstOrNull()?.weight?.inKilograms
+                ?: 0.0).toFloat()
+        val kcalPerKgPerKm = 0.9f
+        
+        Log.d(
+            "ExerciseViewModel",
+            "updateCaloriesBurned: distanceInKm: $distanceInKm, weightInKg: $weightInKg, kcalPerKgPerKm: $kcalPerKgPerKm"
+        )
+        
+        _calories.value = distanceInKm * weightInKg * kcalPerKgPerKm
+    }
+    
+    fun updateDurationMovement(duration: Long) {
+        _durationMovement.value = duration
+    }
     
     fun onWeightChange(weight: String) {
         _weightQuery.value = weight
@@ -131,6 +193,18 @@ class ExerciseViewModel @Inject constructor(
     
     fun unregisterStepListener() {
         sensorManager.unregisterListener()
+        val startTime = _startTime ?: return
+        val endTime = ZonedDateTime.now()
+        val steps = _stepsCount.value
+        val calories = _calories.value.toDouble()
+        
+        viewModelScope.launch {
+            healthConnectManager.writeExerciseSession(
+                start = startTime,
+                end = endTime,
+                steps = steps,
+                calories = calories
+            )
+        }
     }
-    
 }
