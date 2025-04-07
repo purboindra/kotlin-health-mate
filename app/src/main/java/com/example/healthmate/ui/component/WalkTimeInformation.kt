@@ -1,5 +1,6 @@
 package com.example.healthmate.ui.component
 
+import android.annotation.SuppressLint
 import android.os.Build
 import androidx.annotation.RequiresApi
 import androidx.compose.foundation.layout.Arrangement
@@ -18,6 +19,7 @@ import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.healthmate.ui.screen.walk.WalkViewModel
 
+@SuppressLint("DefaultLocale")
 @RequiresApi(Build.VERSION_CODES.S)
 @Composable
 fun WalkTimeInformation(
@@ -27,6 +29,11 @@ fun WalkTimeInformation(
     
     val duration by walkViewModel.durationMovement.collectAsStateWithLifecycle()
     
+    val hours = duration?.toHours() ?: 0
+    val minutes = duration?.toMinutesPart() ?: 0
+    val seconds = duration?.toSecondsPart() ?: 0
+    
+    
     Row(
         modifier = modifier
             .fillMaxWidth()
@@ -35,7 +42,7 @@ fun WalkTimeInformation(
     ) {
         TimeItem(
             modifier = modifier,
-            time = duration?.toHours().toString(),
+            time = String.format("%02d", hours),
             label = "Hour"
         )
         
@@ -49,7 +56,7 @@ fun WalkTimeInformation(
         )
         TimeItem(
             modifier = modifier,
-            time = duration?.toMinutes().toString(),
+            time = String.format("%02d", minutes),
             label = "Minute"
         )
         
@@ -64,7 +71,7 @@ fun WalkTimeInformation(
         
         TimeItem(
             modifier = modifier,
-            time = duration?.toSeconds().toString(),
+            time = String.format("%02d", seconds),
             label = "Second"
         )
         
