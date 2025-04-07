@@ -16,22 +16,25 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material.icons.outlined.Info
-import androidx.compose.material3.ButtonColors
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.ElevatedButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.example.healthmate.data.SensorManager
 import com.example.healthmate.ui.icons.MyIconPack
 import com.example.healthmate.ui.icons.myiconpack.Foot
 import com.example.healthmate.ui.screen.walk.WalkViewModel
@@ -45,10 +48,15 @@ fun WalkInformation(
     modifier: Modifier = Modifier, walkViewModel: WalkViewModel
 ) {
     
+    val context = LocalContext.current
+    
     val stepsCount by walkViewModel.stepsCount.collectAsStateWithLifecycle()
     val distanceMeters by walkViewModel.distanceMeters.collectAsStateWithLifecycle()
     val calories by walkViewModel.calories.collectAsStateWithLifecycle()
     val duration by walkViewModel.durationMovement.collectAsStateWithLifecycle()
+    
+    var stepSensorManager: SensorManager? by remember { mutableStateOf(null) }
+    var isTracking by remember { mutableStateOf(false) }
     
     Box(
         modifier = modifier
@@ -137,6 +145,24 @@ fun WalkInformation(
                 
                 ElevatedButton(
                     onClick = {
+                        if (!isTracking) {
+                            stepSensorManager =
+                                SensorManager(context = context) {
+                                    walkViewModel.updateStepCount(it)
+                                }.also {
+                                    it.registerListener()
+                                }
+                            isTracking = true
+                            
+                            walkViewModel.startTimer()
+                            
+                        } else {
+                            stepSensorManager?.unregisterListener()
+                            isTracking = false
+                            
+                            walkViewModel.stopTimer()
+                            
+                        }
                     },
                     modifier = modifier.fillMaxWidth(),
                     shape = RoundedCornerShape(8.dp),
@@ -144,12 +170,10 @@ fun WalkInformation(
                         containerColor = Color.White
                     ),
                 ) {
-                    duration?.seconds?.let {
-                        Text(
-                            if (it > 0) "Stop" else "Start",
-                            color = BlackPrimary
-                        )
-                    }
+                    Text(
+                        if (isTracking) "Stop" else "Start",
+                        color = BlackPrimary
+                    )
                 }
             }
         }
