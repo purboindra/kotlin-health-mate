@@ -1,5 +1,7 @@
 package com.example.healthmate.ui.screen.walk
 
+import android.os.Build
+import androidx.annotation.RequiresApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
@@ -14,11 +16,13 @@ import com.example.healthmate.ui.component.HeaderWalk
 import com.example.healthmate.ui.component.OsmMapView
 import com.example.healthmate.ui.component.WalkInformation
 
+@RequiresApi(Build.VERSION_CODES.S)
 @Composable
 fun WalkScreen(
     navHostController: NavHostController,
     walkViewModel: WalkViewModel = hiltViewModel<WalkViewModel>()
 ) {
+    
     
     Scaffold { paddingValues ->
         Box(
@@ -28,7 +32,7 @@ fun WalkScreen(
                 .background(Color.Gray.copy(alpha = 0.3f)),
         ) {
             
-            OsmMapView(modifier = Modifier)
+            OsmMapView(modifier = Modifier, walkViewModel = walkViewModel)
             
             HeaderWalk(
                 navHostController = navHostController,
