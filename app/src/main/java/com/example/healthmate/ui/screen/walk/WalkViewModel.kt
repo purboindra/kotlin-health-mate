@@ -3,11 +3,16 @@ package com.example.healthmate.ui.screen.walk
 import android.util.Log
 import androidx.health.connect.client.records.WeightRecord
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import com.example.healthmate.data.HealthConnectManager
 import com.example.healthmate.data.MapManager
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.isActive
+import kotlinx.coroutines.launch
 import java.time.Duration
 import java.time.ZonedDateTime
 import javax.inject.Inject
@@ -35,6 +40,8 @@ class WalkViewModel @Inject constructor(
     
     private var _startTime: ZonedDateTime? = null
     
+    private var timerJob: Job? = null
+    
     /// TODO: Use real value
     val strideLengthMeters = 0.75f
     
@@ -42,23 +49,44 @@ class WalkViewModel @Inject constructor(
         _durationMovement.value = Duration.ZERO
     }
     
-    fun updateStepCount(steps: Int) {
-        
-        if (steps == 0) return
-        
-        _stepsCount.value = steps
-        _distanceMeters.value = steps * strideLengthMeters
-        
-        if (_startTime == null && steps > 0) {
+    fun startTimer() {
+        if (_startTime == null) {
             _startTime = ZonedDateTime.now()
         }
         
-        _startTime?.let {
-            val time = ZonedDateTime.now()
-            val duration = Duration.between(it, time)
-            _durationMovement.value = duration
-            updateCaloriesBurned()
+        if (timerJob?.isActive == true) return
+        
+        timerJob = viewModelScope.launch {
+            while (isActive) {
+                val now = ZonedDateTime.now()
+                val duration = Duration.between(_startTime, now)
+                _durationMovement.value = duration
+                delay(1000L)
+            }
         }
+    }
+    
+    fun stopTimer() {
+        timerJob?.cancel()
+        timerJob = null
+    }
+    
+    fun updateStepCount(steps: Int) {
+        
+        Log.d("WalkViewModel", "updateStepCount: steps: $steps")
+        
+        Log.d(
+            "WalkViewModel",
+            "_durationMovement.value: ${_durationMovement.value}"
+        )
+        
+        
+        if (steps == 0) return
+        
+        updateCaloriesBurned()
+        
+        _stepsCount.value = steps
+        _distanceMeters.value = steps * strideLengthMeters
         
         Log.d(
             "WalkViewModel",
