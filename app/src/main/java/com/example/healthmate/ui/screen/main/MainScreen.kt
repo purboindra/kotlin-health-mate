@@ -1,5 +1,7 @@
 package com.example.healthmate.ui.screen.main
 
+import android.os.Build
+import androidx.annotation.RequiresApi
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeContentPadding
 import androidx.compose.foundation.lazy.LazyColumn
@@ -27,6 +29,7 @@ import com.example.healthmate.ui.screen.goal.GoalScreen
 import com.example.healthmate.ui.screen.home.HomeScreen
 import com.example.healthmate.ui.screen.profile.ProfileScreen
 
+@RequiresApi(Build.VERSION_CODES.Q)
 @Composable
 fun MainScreen(
     mainViewModel: MainViewModel = hiltViewModel(),
@@ -42,7 +45,9 @@ fun MainScreen(
         floatingActionButton = {
             if (currentDestination == "/exercise")
                 SmallFloatingActionButton(
-                    onClick = { },
+                    onClick = {
+                        navHostController.navigate(Screen.Walk.route)
+                    },
                     containerColor = MaterialTheme.colorScheme.secondaryContainer,
                     contentColor = MaterialTheme.colorScheme.secondary
                 ) {
@@ -86,7 +91,7 @@ fun MainScreen(
                 ExerciseScreen(
                     modifier = Modifier.padding(paddingValues),
                     navHostController = bottomNavController,
-                    healthConnectManager = healthConnectManager
+                    healthConnectManager = healthConnectManager,
                 )
             }
             composable(
