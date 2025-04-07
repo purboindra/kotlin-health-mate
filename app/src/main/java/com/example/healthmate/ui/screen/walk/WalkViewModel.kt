@@ -13,6 +13,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
+import org.osmdroid.util.GeoPoint
 import java.time.Duration
 import java.time.ZonedDateTime
 import javax.inject.Inject
@@ -38,6 +39,10 @@ class WalkViewModel @Inject constructor(
     private val _weightList = MutableStateFlow<List<WeightRecord>>(emptyList())
     val weightList = _weightList.asStateFlow()
     
+    /// MAPS
+    private val _locations = MutableStateFlow<List<GeoPoint>>(emptyList())
+    val locations = _locations.asStateFlow()
+    
     private var _startTime: ZonedDateTime? = null
     
     private var timerJob: Job? = null
@@ -47,6 +52,10 @@ class WalkViewModel @Inject constructor(
     
     init {
         _durationMovement.value = Duration.ZERO
+    }
+    
+    fun addLocation(point: GeoPoint) {
+        _locations.value = _locations.value + point
     }
     
     fun startTimer() {
