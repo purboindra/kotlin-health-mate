@@ -6,6 +6,7 @@ import android.hardware.SensorEvent
 import android.hardware.SensorEventListener
 import android.hardware.SensorManager
 import android.util.Log
+import android.widget.Toast
 
 const val TAG = "SensorManager"
 
@@ -23,6 +24,8 @@ class SensorManager(
     private val stepDetector =
         sensorManager.getDefaultSensor(Sensor.TYPE_STEP_DETECTOR)
     private val allSensors = sensorManager.getSensorList(Sensor.TYPE_ALL)
+    
+    val ctx = context
     
     fun hasStepSensor(): Boolean {
         allSensors.forEach {
@@ -54,6 +57,14 @@ class SensorManager(
     
     fun registerListener() {
         Log.d(TAG, "registerListener")
+        
+        if (!hasStepSensor()) {
+            Toast.makeText(
+                ctx, "No step sensor found", Toast.LENGTH_SHORT
+            ).show()
+            return
+        }
+        
         stepCounter?.let {
             Log.d(
                 TAG,
