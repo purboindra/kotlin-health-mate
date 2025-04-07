@@ -177,8 +177,6 @@ class ExerciseViewModel @Inject constructor(
                             "HealthConnect",
                             "no more changes: ${state.nextChangesToken}"
                         )
-//                        _changeMessageToken.value =
-//                            ChangesMessage.NoMoreChanges(state.nextChangesToken)
                     }
                     
                     is ChangesMessage.ChangeLists -> {
