@@ -81,4 +81,14 @@ dependencies {
     
     /// WORK MANAGER
     implementation(libs.androidx.work.runtime)
+    
+    /// MAPS
+//    implementation(libs.maps.compose)
+//    implementation(libs.maps.compose.widgets)
+//    implementation(libs.maps.compose.utils)
+    
+    /// OPEN STREET MAP
+    implementation(libs.osmdroid.android)
+    implementation(libs.play.services.location)
+    
 }
