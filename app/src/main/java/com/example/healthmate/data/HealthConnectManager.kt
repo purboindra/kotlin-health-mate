@@ -33,6 +33,7 @@ import kotlinx.coroutines.flow.flow
 import java.io.IOException
 import java.time.Instant
 import java.time.ZonedDateTime
+import java.time.temporal.ChronoField
 import kotlin.random.Random
 
 // The minimum android level that can use Health Connect
@@ -70,7 +71,7 @@ class HealthConnectManager(private val context: Context) {
         context.startActivity(intent)
     }
     
-     var availability = mutableIntStateOf(SDK_UNAVAILABLE)
+    var availability = mutableIntStateOf(SDK_UNAVAILABLE)
     
     private fun checkAvailability() {
         availability.intValue = HealthConnectClient.getSdkStatus(context)
@@ -160,6 +161,48 @@ class HealthConnectManager(private val context: Context) {
                 .show()
         }
     }
+    
+    suspend fun readExerciseSessions(
+        start: Instant,
+        end: Instant
+    ): List<ExerciseSessionRecord> {
+        val request = ReadRecordsRequest(
+            recordType = ExerciseSessionRecord::class,
+            timeRangeFilter = TimeRangeFilter.between(start, end)
+        )
+        val response = healthConnectClient.readRecords(request)
+        return response.records
+    }
+    
+    suspend fun readStepsRecord(
+    ): List<StepsRecord> {
+        
+        val startOfWeek = ZonedDateTime.now().with(ChronoField.DAY_OF_WEEK, 1)
+        val endOfWeek = ZonedDateTime.now()
+        
+        Log.d(
+            "HealthConnectManager",
+            "readStepsRecord startOfWeek: $startOfWeek, endOfWeek: $endOfWeek"
+        )
+        
+        val request = ReadRecordsRequest(
+            recordType = StepsRecord::class,
+            timeRangeFilter = TimeRangeFilter.between(
+                startOfWeek.toInstant(),
+                endOfWeek.toInstant()
+            )
+        )
+        val response = healthConnectClient.readRecords(request)
+        
+        
+        Log.d(
+            "HealthConnectManager",
+            "readStepsRecord response: ${response.records}"
+        )
+        
+        return response.records
+    }
+    
     
     @SuppressLint("RestrictedApi")
     suspend fun writeExerciseSession(
