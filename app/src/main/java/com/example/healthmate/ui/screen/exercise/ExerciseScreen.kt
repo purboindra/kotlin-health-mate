@@ -36,6 +36,7 @@ import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.health.connect.client.HealthConnectClient
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import com.example.healthmate.data.HealthConnectManager
@@ -51,6 +52,7 @@ import com.example.healthmate.ui.dialog.ActivityHealthMateDialog
 import com.example.healthmate.ui.icons.MyIconPack
 import com.example.healthmate.ui.icons.myiconpack.Cardio
 import com.example.healthmate.ui.icons.myiconpack.Foot
+import com.example.healthmate.ui.navigation.Screen
 import com.example.healthmate.ui.theme.GrayDark
 import com.example.healthmate.ui.theme.MintGreen
 import com.example.healthmate.util.HorizontalSpacer
@@ -83,7 +85,19 @@ fun ExerciseScreen(
         }
     }
     
+    val healthConnectManager = remember {
+        HealthConnectManager(context)
+    }
+    
     LaunchedEffect(Unit) {
+        val healthConnectAvailable = healthConnectManager.availability
+        
+        if (healthConnectAvailable.intValue != HealthConnectClient.SDK_UNAVAILABLE) {
+            Log.d("HealthConnectManager", "Health connect not available")
+            navHostController.navigate(Screen.HealthConnectUnavailable.route)
+            return@LaunchedEffect
+        }
+        
         loading = true
         exerciseViewModel.getWeight()
         loading = false
