@@ -14,9 +14,10 @@ import androidx.annotation.RequiresApi
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.health.connect.client.HealthConnectClient
+import androidx.navigation.compose.rememberNavController
 import com.example.healthmate.data.HealthConnectManager
 import com.example.healthmate.data.SensorManager
-import com.example.healthmate.ui.component.HealthConnectUnavailable
+import com.example.healthmate.ui.screen.HealthConnectUnavailable
 import dagger.hilt.android.AndroidEntryPoint
 
 private val TAG = "MainActivity"
@@ -33,6 +34,7 @@ class MainActivity : ComponentActivity() {
         enableEdgeToEdge()
         
         context = this
+        
         
         val healthConnectManager =
             HealthConnectManager(context!!)
@@ -78,8 +80,11 @@ class MainActivity : ComponentActivity() {
         }
         
         setContent {
+            
+            val navHostController = rememberNavController()
+            
             if (healthConnectUnavailable) {
-                HealthConnectUnavailable()
+                HealthConnectUnavailable(navHostController = navHostController)
             } else {
                 HealthMateApp(healthConnectManager)
             }
