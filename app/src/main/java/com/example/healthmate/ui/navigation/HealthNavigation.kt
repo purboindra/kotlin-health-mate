@@ -26,7 +26,7 @@ fun HealthNavigation(
         composable(
             route = Screen.HealthConnectUnavailable.route
         ) {
-            HealthConnectUnavailable()
+            HealthConnectUnavailable(navHostController = navHostController)
         }
         
         composable(
