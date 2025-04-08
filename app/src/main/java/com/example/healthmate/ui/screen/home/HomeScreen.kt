@@ -1,14 +1,16 @@
 package com.example.healthmate.ui.screen.home
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
+import com.example.healthmate.data.HealthConnectManager
 import com.example.healthmate.ui.component.HomeScreenHeader
 import com.example.healthmate.ui.component.TodayMeal
 import com.example.healthmate.ui.component.WeeklyHoursSchedule
@@ -19,6 +21,8 @@ import com.example.healthmate.util.VerticalSpacer
 
 @Composable
 fun HomeScreen(modifier: Modifier) {
+    
+    val context = LocalContext.current
     
     val schedules = listOf(
         WeeklyScheduleItem(
@@ -79,6 +83,14 @@ fun HomeScreen(modifier: Modifier) {
             duration = 3,
         )
     )
+    
+    val healthConnectManager = remember {
+        HealthConnectManager(context)
+    }
+    
+    LaunchedEffect(Unit) {
+        healthConnectManager.readStepsRecord()
+    }
     
     LazyColumn(
     
