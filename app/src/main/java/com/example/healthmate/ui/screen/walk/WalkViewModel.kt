@@ -45,7 +45,7 @@ class WalkViewModel @Inject constructor(
     
     private var _startTime: ZonedDateTime? = null
     
-    private var timerJob: Job? = null
+    private var _timerJob: Job? = null
     
     /// TODO: Use real value
     val strideLengthMeters = 0.75f
@@ -63,9 +63,9 @@ class WalkViewModel @Inject constructor(
             _startTime = ZonedDateTime.now()
         }
         
-        if (timerJob?.isActive == true) return
+        if (_timerJob?.isActive == true) return
         
-        timerJob = viewModelScope.launch {
+        _timerJob = viewModelScope.launch {
             while (isActive) {
                 val now = ZonedDateTime.now()
                 val duration = Duration.between(_startTime, now)
@@ -76,8 +76,8 @@ class WalkViewModel @Inject constructor(
     }
     
     fun stopTimer() {
-        timerJob?.cancel()
-        timerJob = null
+        _timerJob?.cancel()
+        _timerJob = null
     }
     
     fun updateStepCount(steps: Int) {
