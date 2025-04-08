@@ -92,7 +92,7 @@ fun ExerciseScreen(
     LaunchedEffect(Unit) {
         val healthConnectAvailable = healthConnectManager.availability
         
-        if (healthConnectAvailable.intValue != HealthConnectClient.SDK_UNAVAILABLE) {
+        if (healthConnectAvailable.intValue == HealthConnectClient.SDK_UNAVAILABLE) {
             Log.d("HealthConnectManager", "Health connect not available")
             navHostController.navigate(Screen.HealthConnectUnavailable.route)
             return@LaunchedEffect
