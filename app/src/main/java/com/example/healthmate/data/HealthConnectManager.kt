@@ -70,7 +70,7 @@ class HealthConnectManager(private val context: Context) {
         context.startActivity(intent)
     }
     
-    private var availability = mutableIntStateOf(SDK_UNAVAILABLE)
+     var availability = mutableIntStateOf(SDK_UNAVAILABLE)
     
     private fun checkAvailability() {
         availability.intValue = HealthConnectClient.getSdkStatus(context)

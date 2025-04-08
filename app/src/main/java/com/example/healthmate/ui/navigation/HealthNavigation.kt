@@ -8,6 +8,7 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import com.example.healthmate.data.HealthConnectManager
+import com.example.healthmate.ui.screen.HealthConnectUnavailable
 import com.example.healthmate.ui.screen.exercise_option.ExerciseOptionScreen
 import com.example.healthmate.ui.screen.main.MainScreen
 import com.example.healthmate.ui.screen.walk.WalkScreen
@@ -21,6 +22,13 @@ fun HealthNavigation(
     val context = LocalContext.current
     NavHost(navHostController, startDestination = Screen.Main.route) {
         val healthConnectManager = HealthConnectManager(context)
+        
+        composable(
+            route = Screen.HealthConnectUnavailable.route
+        ) {
+            HealthConnectUnavailable()
+        }
+        
         composable(
             route = Screen.Main.route
         ) {
@@ -41,7 +49,7 @@ fun HealthNavigation(
         ) {
             WalkScreen(
                 navHostController = navHostController,
-                )
+            )
         }
     }
 }

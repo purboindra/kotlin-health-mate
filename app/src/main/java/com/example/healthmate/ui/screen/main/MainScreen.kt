@@ -90,7 +90,7 @@ fun MainScreen(
             ) {
                 ExerciseScreen(
                     modifier = Modifier.padding(paddingValues),
-                    navHostController = bottomNavController,
+                    navHostController = navHostController,
                     healthConnectManager = healthConnectManager,
                 )
             }
