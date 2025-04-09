@@ -18,6 +18,7 @@ import java.time.Instant
 import java.time.ZoneId
 import java.time.ZonedDateTime
 import java.time.format.DateTimeFormatter
+import java.time.temporal.ChronoField
 import javax.inject.Inject
 
 const val TAG = "ExerciseViewModel"
@@ -202,6 +203,20 @@ class ExerciseViewModel @Inject constructor(
                 end = endTime,
                 steps = steps,
                 calories = calories
+            )
+        }
+    }
+    
+    init {
+        
+        val startOfWeek = ZonedDateTime.now().with(ChronoField.DAY_OF_WEEK, 1)
+        val endOfWeek = ZonedDateTime.now()
+        
+        viewModelScope.launch {
+            healthConnectManager.readStepsRecord()
+            healthConnectManager.readExerciseSessions(
+                start = startOfWeek.toInstant(),
+                end = endOfWeek.toInstant()
             )
         }
     }
