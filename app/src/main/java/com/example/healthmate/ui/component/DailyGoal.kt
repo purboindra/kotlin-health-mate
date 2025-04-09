@@ -1,5 +1,6 @@
 package com.example.healthmate.ui.component
 
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -23,6 +24,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.navigation.NavHostController
+import com.example.healthmate.ui.navigation.Screen
 import com.example.healthmate.ui.theme.GrayDark
 import com.example.healthmate.util.HorizontalSpacer
 import com.example.healthmate.util.VerticalSpacer
@@ -35,7 +38,10 @@ data class DailyGoalItem(
 )
 
 @Composable
-fun DailyGoal() {
+fun DailyGoal(
+    modifier: Modifier = Modifier,
+    navHostController: NavHostController,
+) {
     
     val dailyGoals = listOf<DailyGoalItem>(
         DailyGoalItem(
@@ -76,9 +82,11 @@ fun DailyGoal() {
     )
     
     Card(
-        modifier = Modifier
+        modifier = modifier
             .fillMaxWidth()
-            .padding(12.dp),
+            .padding(12.dp).clickable(onClick = {
+                navHostController.navigate(Screen.MyActivity.route)
+            }),
         colors = CardDefaults.cardColors(
             containerColor = Color.White
         ),
@@ -87,12 +95,12 @@ fun DailyGoal() {
         )
     ) {
         Column(
-            modifier = Modifier
+            modifier = modifier
                 .padding(12.dp)
         ) {
             Row(
                 horizontalArrangement = Arrangement.SpaceBetween,
-                modifier = Modifier.fillMaxWidth()
+                modifier = modifier.fillMaxWidth()
             ) {
                 Text(
                     "Target Harian",
@@ -103,7 +111,7 @@ fun DailyGoal() {
                 Icon(
                     Icons.AutoMirrored.Filled.KeyboardArrowRight,
                     contentDescription = "Detail",
-                    modifier = Modifier.size(18.dp)
+                    modifier = modifier.size(18.dp)
                 )
             }
             3.VerticalSpacer()
@@ -115,7 +123,7 @@ fun DailyGoal() {
             8.VerticalSpacer()
             
             Row(
-                modifier = Modifier.fillMaxWidth(),
+                modifier = modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceBetween
             ) {
                 Column(
@@ -138,12 +146,12 @@ fun DailyGoal() {
                 }
                 10.HorizontalSpacer()
                 LazyRow(
-                    modifier = Modifier.fillMaxWidth(),
+                    modifier = modifier.fillMaxWidth(),
                     horizontalArrangement = Arrangement.spacedBy(8.dp)
                 ) {
                     items(dailyGoals) { item ->
                         Column(
-                            modifier = Modifier
+                            modifier = modifier
                                 .height(48.dp)
                                 .fillMaxWidth(),
                             horizontalAlignment = Alignment.CenterHorizontally,
