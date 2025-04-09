@@ -22,6 +22,8 @@ import androidx.health.connect.client.records.SpeedRecord
 import androidx.health.connect.client.records.StepsRecord
 import androidx.health.connect.client.records.TotalCaloriesBurnedRecord
 import androidx.health.connect.client.records.WeightRecord
+import androidx.health.connect.client.records.metadata.Device
+import androidx.health.connect.client.records.metadata.Device.Companion.TYPE_PHONE
 import androidx.health.connect.client.records.metadata.Metadata
 import androidx.health.connect.client.request.ChangesTokenRequest
 import androidx.health.connect.client.request.ReadRecordsRequest
@@ -171,6 +173,12 @@ class HealthConnectManager(private val context: Context) {
             timeRangeFilter = TimeRangeFilter.between(start, end)
         )
         val response = healthConnectClient.readRecords(request)
+        
+        Log.d(
+            "HealthConnectManager",
+            "readExerciseSessions response: ${response.records}"
+        )
+        
         return response.records
     }
     
@@ -211,10 +219,15 @@ class HealthConnectManager(private val context: Context) {
         steps: Int,
         calories: Double
     ) {
+        
+        val device = Device(type = TYPE_PHONE)
+        
         healthConnectClient.insertRecords(
             listOf(
                 ExerciseSessionRecord(
-                    metadata = Metadata.manualEntry(),
+                    metadata = Metadata.manualEntry(
+                        device = device,
+                    ),
                     startTime = start.toInstant(),
                     startZoneOffset = start.offset,
                     endTime = end.toInstant(),
@@ -222,14 +235,18 @@ class HealthConnectManager(private val context: Context) {
                     exerciseType = ExerciseSessionRecord.EXERCISE_TYPE_RUNNING,
                     title = "My Run #${Random.nextInt(0, 60)}"
                 ), StepsRecord(
-                    metadata = Metadata.manualEntry(),
+                    metadata = Metadata.manualEntry(
+                        device = device,
+                    ),
                     startTime = start.toInstant(),
                     startZoneOffset = start.offset,
                     endTime = end.toInstant(),
                     endZoneOffset = end.offset,
                     count = steps.toLong()
                 ), TotalCaloriesBurnedRecord(
-                    metadata = Metadata.manualEntry(),
+                    metadata = Metadata.manualEntry(
+                        device = device,
+                    ),
                     startTime = start.toInstant(),
                     startZoneOffset = start.offset,
                     endTime = end.toInstant(),
