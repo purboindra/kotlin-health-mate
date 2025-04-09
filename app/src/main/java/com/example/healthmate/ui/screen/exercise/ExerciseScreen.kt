@@ -203,7 +203,7 @@ fun ExerciseScreen(
                 exerciseViewModel = exerciseViewModel
             )
             
-            DailyGoal()
+            DailyGoal(navHostController = navHostController)
             
             SyncWithHealthConnectCard()
             
