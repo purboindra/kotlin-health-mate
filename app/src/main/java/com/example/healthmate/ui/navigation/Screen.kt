@@ -10,4 +10,5 @@ sealed class Screen(val route: String) {
     data object ExerciseOption : Screen("/exercise-option")
     data object Walk : Screen("/walk")
     data object HealthConnectUnavailable : Screen("/health-connect-unavailable")
+    data object MyActivity : Screen("/my-activity")
 }
