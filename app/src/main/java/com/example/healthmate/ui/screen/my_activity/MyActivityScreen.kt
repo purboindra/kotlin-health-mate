@@ -22,6 +22,9 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
+import com.example.healthmate.ui.component.MyActivityDaily
+import com.example.healthmate.ui.component.MyActivityMonthly
+import com.example.healthmate.ui.component.MyActivityWeekly
 import com.example.healthmate.ui.component.PrimaryTextTabs
 import com.example.healthmate.util.HorizontalSpacer
 import com.example.healthmate.util.VerticalSpacer
@@ -81,24 +84,15 @@ fun MyActivityScreen(navHostController: NavHostController) {
             10.VerticalSpacer()
             when (tabIndex) {
                 0 -> {
-                    Text(
-                        "Tab 1",
-                        style = MaterialTheme.typography.titleMedium
-                    )
+                    MyActivityDaily()
                 }
                 
                 1 -> {
-                    Text(
-                        "Tab 2",
-                        style = MaterialTheme.typography.titleMedium
-                    )
+                    MyActivityWeekly()
                 }
                 
                 else -> {
-                    Text(
-                        "Tab 3",
-                        style = MaterialTheme.typography.titleMedium
-                    )
+                    MyActivityMonthly()
                 }
             }
         }
