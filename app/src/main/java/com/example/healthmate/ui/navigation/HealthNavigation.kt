@@ -11,6 +11,7 @@ import com.example.healthmate.data.HealthConnectManager
 import com.example.healthmate.ui.screen.HealthConnectUnavailable
 import com.example.healthmate.ui.screen.exercise_option.ExerciseOptionScreen
 import com.example.healthmate.ui.screen.main.MainScreen
+import com.example.healthmate.ui.screen.my_activity.MyActivityScreen
 import com.example.healthmate.ui.screen.walk.WalkScreen
 
 
@@ -48,6 +49,13 @@ fun HealthNavigation(
             route = Screen.Walk.route
         ) {
             WalkScreen(
+                navHostController = navHostController,
+            )
+        }
+        composable(
+            route = Screen.MyActivity.route
+        ) {
+            MyActivityScreen(
                 navHostController = navHostController,
             )
         }
