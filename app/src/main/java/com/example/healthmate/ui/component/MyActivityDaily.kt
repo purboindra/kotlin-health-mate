@@ -23,7 +23,12 @@ fun MyActivityDaily(modifier: Modifier = Modifier) {
     Column(
         modifier = modifier.fillMaxSize(),
     ) {
-        DateMyActivityDaily(modifier = modifier)
+        DateMyActivityDaily(
+            modifier = modifier,
+            title = "Kamis, 10 April",
+            onNext = {},
+            onPrev = {}
+        )
         8.VerticalSpacer()
         ChartMyActivityDaily(modifier = modifier)
         8.VerticalSpacer()
