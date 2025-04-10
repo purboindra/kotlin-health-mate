@@ -91,4 +91,8 @@ dependencies {
     implementation(libs.osmdroid.android)
     implementation(libs.play.services.location)
     
+    /// VICO
+    implementation(libs.vico.compose)
+    implementation(libs.vico.compose.m3)
+    
 }
