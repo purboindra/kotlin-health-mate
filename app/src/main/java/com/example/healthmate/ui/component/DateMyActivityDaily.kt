@@ -22,7 +22,12 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 
 @Composable
-fun DateMyActivityDaily(modifier: Modifier = Modifier) {
+fun DateMyActivityDaily(
+    modifier: Modifier = Modifier,
+    title: String,
+    onNext: () -> Unit,
+    onPrev: () -> Unit,
+) {
     Box(
         modifier = modifier
             .height(64.dp)
@@ -33,7 +38,7 @@ fun DateMyActivityDaily(modifier: Modifier = Modifier) {
             horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically
         ) {
-            IconButton(onClick = {}) {
+            IconButton(onClick = onPrev) {
                 Icon(
                     Icons.AutoMirrored.Filled.KeyboardArrowLeft,
                     contentDescription = "Previous",
@@ -43,7 +48,7 @@ fun DateMyActivityDaily(modifier: Modifier = Modifier) {
             
             Column(horizontalAlignment = Alignment.CenterHorizontally) {
                 Text(
-                    "Kamis, 10 April",
+                    title,
                     style = MaterialTheme.typography.titleMedium.copy(
                         fontWeight = FontWeight.Normal,
                     )
@@ -51,7 +56,7 @@ fun DateMyActivityDaily(modifier: Modifier = Modifier) {
                 Text("0 point", style = MaterialTheme.typography.labelSmall)
             }
             
-            IconButton(onClick = {}) {
+            IconButton(onClick = onNext) {
                 Icon(
                     Icons.AutoMirrored.Filled.KeyboardArrowRight,
                     contentDescription = "Next",
