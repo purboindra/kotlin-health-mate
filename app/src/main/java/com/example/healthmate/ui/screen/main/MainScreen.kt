@@ -2,17 +2,24 @@ package com.example.healthmate.ui.screen.main
 
 import android.os.Build
 import androidx.annotation.RequiresApi
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeContentPadding
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material3.ElevatedButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SmallFloatingActionButton
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
@@ -23,11 +30,13 @@ import androidx.navigation.compose.rememberNavController
 import androidx.navigation.createGraph
 import com.example.healthmate.data.HealthConnectManager
 import com.example.healthmate.ui.component.AppBottomNavigationBar
+import com.example.healthmate.ui.component.ExpandableFAB
 import com.example.healthmate.ui.navigation.Screen
 import com.example.healthmate.ui.screen.exercise.ExerciseScreen
 import com.example.healthmate.ui.screen.goal.GoalScreen
 import com.example.healthmate.ui.screen.home.HomeScreen
 import com.example.healthmate.ui.screen.profile.ProfileScreen
+import com.example.healthmate.util.VerticalSpacer
 
 @RequiresApi(Build.VERSION_CODES.Q)
 @Composable
@@ -44,15 +53,26 @@ fun MainScreen(
     Scaffold(
         floatingActionButton = {
             if (currentDestination == "/exercise")
-                SmallFloatingActionButton(
-                    onClick = {
-                        navHostController.navigate(Screen.Walk.route)
-                    },
-                    containerColor = MaterialTheme.colorScheme.secondaryContainer,
-                    contentColor = MaterialTheme.colorScheme.secondary
-                ) {
-                    Icon(Icons.Filled.Add, "Add")
-                }
+                ExpandableFAB(
+                    content = {
+                        Column{
+                            ElevatedButton(
+                                onClick = {
+                                    navHostController.navigate(Screen.Walk.route)
+                                }
+                            ) {
+                                Text("Walking")
+                            }
+                            4.VerticalSpacer()
+                            ElevatedButton(
+                                
+                                onClick = {}
+                            ) {
+                                Text("Set Goal")
+                            }
+                        }
+                    }
+                )
         },
         bottomBar = {
             AppBottomNavigationBar(
