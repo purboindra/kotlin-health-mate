@@ -35,7 +35,6 @@ class MainActivity : ComponentActivity() {
         
         context = this
         
-        
         val healthConnectManager =
             HealthConnectManager(context!!)
         
@@ -49,34 +48,6 @@ class MainActivity : ComponentActivity() {
                 "Health Connect not available!",
                 Toast.LENGTH_LONG
             ).show()
-        }
-        
-        val isGranted = ContextCompat.checkSelfPermission(
-            this,
-            Manifest.permission.ACTIVITY_RECOGNITION
-        ) == PackageManager.PERMISSION_GRANTED
-        
-        if (!isGranted) {
-            ActivityCompat.requestPermissions(
-                this,
-                arrayOf(Manifest.permission.ACTIVITY_RECOGNITION),
-                100 // request code
-            )
-            
-        }
-        
-        val isGrantedLocation = ContextCompat.checkSelfPermission(
-            this,
-            Manifest.permission.ACCESS_FINE_LOCATION
-        ) == PackageManager.PERMISSION_GRANTED
-        
-        if (!isGrantedLocation) {
-            ActivityCompat.requestPermissions(
-                this,
-                arrayOf(Manifest.permission.ACCESS_FINE_LOCATION),
-                100 // request code
-            )
-            
         }
         
         setContent {
