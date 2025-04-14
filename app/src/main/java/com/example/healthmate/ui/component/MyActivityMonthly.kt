@@ -1,19 +1,24 @@
 package com.example.healthmate.ui.component
 
 
-import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import com.example.healthmate.util.VerticalSpacer
 
 @Composable
 fun MyActivityMonthly(modifier: Modifier = Modifier) {
-    Box(
-        modifier = modifier.fillMaxSize(),
-        contentAlignment = Alignment.Center
-    ) {
-        Text("Daily Activity")
+    
+    
+    Column(modifier = modifier.fillMaxSize()) {
+        DateMyActivityDaily(
+            modifier = modifier,
+            title = "April 2025",
+            onNext = {},
+            onPrev = {}
+        )
+        8.VerticalSpacer()
+        
     }
 }
