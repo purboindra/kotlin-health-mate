@@ -23,21 +23,10 @@ class SensorManager(
         sensorManager.getDefaultSensor(Sensor.TYPE_STEP_COUNTER)
     private val stepDetector =
         sensorManager.getDefaultSensor(Sensor.TYPE_STEP_DETECTOR)
-    private val allSensors = sensorManager.getSensorList(Sensor.TYPE_ALL)
     
     val ctx = context
     
     fun hasStepSensor(): Boolean {
-        allSensors.forEach {
-            Log.d(
-                TAG,
-                "hasStepSensor with list: ${it.name} - ${it.type}"
-            )
-        }
-        
-        Log.d(TAG, "hasStepSensor: ${stepCounter?.name} - ${stepCounter?.type}")
-        Log.d(TAG, "hasStepSensor: $stepDetector")
-        
         return stepCounter != null || stepDetector != null
     }
     
@@ -50,14 +39,10 @@ class SensorManager(
             Log.d(TAG, "onSensorChanged: $stepsToday")
             onStepUpdate(stepsToday)
         }
-        
         override fun onAccuracyChanged(sensor: Sensor?, accuracy: Int) {}
     }
     
-    
     fun registerListener() {
-        Log.d(TAG, "registerListener")
-        
         if (!hasStepSensor()) {
             Toast.makeText(
                 ctx, "No step sensor found", Toast.LENGTH_SHORT
@@ -66,10 +51,6 @@ class SensorManager(
         }
         
         stepCounter?.let {
-            Log.d(
-                TAG,
-                "stepCounter registerListener: ${it.name} - ${it.type} firing"
-            )
             sensorManager.registerListener(
                 stepListener,
                 stepCounter,
