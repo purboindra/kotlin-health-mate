@@ -37,6 +37,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.healthmate.data.SensorManager
 import com.example.healthmate.ui.icons.MyIconPack
 import com.example.healthmate.ui.icons.myiconpack.Foot
+import com.example.healthmate.ui.screen.exercise.ExerciseViewModel
 import com.example.healthmate.ui.screen.walk.WalkViewModel
 import com.example.healthmate.ui.theme.BlackPrimary
 import com.example.healthmate.ui.theme.MintGreen
@@ -45,7 +46,9 @@ import com.example.healthmate.util.VerticalSpacer
 @RequiresApi(Build.VERSION_CODES.S)
 @Composable
 fun WalkInformation(
-    modifier: Modifier = Modifier, walkViewModel: WalkViewModel
+    modifier: Modifier = Modifier, walkViewModel: WalkViewModel,
+    exerciseViewModel: ExerciseViewModel
+
 ) {
     
     val context = LocalContext.current
@@ -157,10 +160,11 @@ fun WalkInformation(
                             walkViewModel.startTimer()
                             
                         } else {
-                            stepSensorManager?.unregisterListener()
+//                            stepSensorManager?.unregisterListener()
                             isTracking = false
                             
                             walkViewModel.stopTimer()
+                            exerciseViewModel.unregisterStepListener()
                             
                         }
                     },
