@@ -5,6 +5,7 @@ import android.net.Uri
 import android.os.Build
 import android.provider.Settings
 import android.util.Log
+import android.widget.Toast
 import androidx.annotation.RequiresApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -46,6 +47,7 @@ import com.example.healthmate.ui.component.CardioInformation
 import com.example.healthmate.ui.component.DailyGoal
 import com.example.healthmate.ui.component.NonActiveActivityCard
 import com.example.healthmate.ui.component.ProgressCircle
+import com.example.healthmate.ui.component.RequestPermission
 import com.example.healthmate.ui.component.RowIconWithText
 import com.example.healthmate.ui.component.SyncWithHealthConnectCard
 import com.example.healthmate.ui.dialog.ActivityHealthMateDialog
@@ -88,6 +90,21 @@ fun ExerciseScreen(
     val healthConnectManager = remember {
         HealthConnectManager(context)
     }
+    
+    
+    RequestPermission(
+        healthConnectManager = healthConnectManager,
+        onGranted = {
+//                requestStepPermission()
+        },
+        onDenied = {
+            Toast.makeText(
+                context,
+                "Permission denied",
+                Toast.LENGTH_SHORT
+            ).show()
+        }
+    )
     
     LaunchedEffect(Unit) {
         val healthConnectAvailable = healthConnectManager.availability
