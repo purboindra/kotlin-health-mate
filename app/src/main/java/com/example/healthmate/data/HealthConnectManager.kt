@@ -18,6 +18,7 @@ import androidx.health.connect.client.permission.HealthPermission
 import androidx.health.connect.client.records.DistanceRecord
 import androidx.health.connect.client.records.ExerciseSessionRecord
 import androidx.health.connect.client.records.HeartRateRecord
+import androidx.health.connect.client.records.PlannedExerciseSessionRecord
 import androidx.health.connect.client.records.SpeedRecord
 import androidx.health.connect.client.records.StepsRecord
 import androidx.health.connect.client.records.TotalCaloriesBurnedRecord
@@ -63,6 +64,8 @@ class HealthConnectManager(private val context: Context) {
         HealthPermission.getReadPermission(HeartRateRecord::class),
         HealthPermission.getReadPermission(WeightRecord::class),
         HealthPermission.getWritePermission(WeightRecord::class),
+        HealthPermission.getReadPermission(PlannedExerciseSessionRecord::class),
+        HealthPermission.getWritePermission(PlannedExerciseSessionRecord::class)
     )
     
     fun promptUpdateHealthConnect() {
