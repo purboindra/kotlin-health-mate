@@ -18,6 +18,7 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SmallFloatingActionButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.unit.dp
@@ -37,6 +38,7 @@ import com.example.healthmate.ui.screen.goal.GoalScreen
 import com.example.healthmate.ui.screen.home.HomeScreen
 import com.example.healthmate.ui.screen.profile.ProfileScreen
 import com.example.healthmate.util.VerticalSpacer
+import kotlinx.coroutines.launch
 
 @RequiresApi(Build.VERSION_CODES.Q)
 @Composable
@@ -50,12 +52,14 @@ fun MainScreen(
     val currentDestination =
         bottomNavController.currentBackStackEntryAsState().value?.destination?.route
     
+    val coroutineScope = rememberCoroutineScope()
+    
     Scaffold(
         floatingActionButton = {
             if (currentDestination == "/exercise")
                 ExpandableFAB(
                     content = {
-                        Column{
+                        Column {
                             ElevatedButton(
                                 onClick = {
                                     navHostController.navigate(Screen.Walk.route)
@@ -66,7 +70,11 @@ fun MainScreen(
                             4.VerticalSpacer()
                             ElevatedButton(
                                 
-                                onClick = {}
+                                onClick = {
+                                    coroutineScope.launch {
+                                        healthConnectManager.writePlanExercise()
+                                    }
+                                }
                             ) {
                                 Text("Set Goal")
                             }

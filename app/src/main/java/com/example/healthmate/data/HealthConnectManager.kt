@@ -16,9 +16,14 @@ import androidx.health.connect.client.PermissionController
 import androidx.health.connect.client.changes.Change
 import androidx.health.connect.client.permission.HealthPermission
 import androidx.health.connect.client.records.DistanceRecord
+import androidx.health.connect.client.records.ExerciseCompletionGoal
+import androidx.health.connect.client.records.ExercisePerformanceTarget
+import androidx.health.connect.client.records.ExerciseSegment
 import androidx.health.connect.client.records.ExerciseSessionRecord
 import androidx.health.connect.client.records.HeartRateRecord
+import androidx.health.connect.client.records.PlannedExerciseBlock
 import androidx.health.connect.client.records.PlannedExerciseSessionRecord
+import androidx.health.connect.client.records.PlannedExerciseStep
 import androidx.health.connect.client.records.SpeedRecord
 import androidx.health.connect.client.records.StepsRecord
 import androidx.health.connect.client.records.TotalCaloriesBurnedRecord
@@ -34,7 +39,9 @@ import androidx.health.connect.client.units.Mass
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import java.io.IOException
+import java.time.Duration
 import java.time.Instant
+import java.time.LocalDate
 import java.time.ZonedDateTime
 import java.time.temporal.ChronoField
 import kotlin.random.Random
@@ -311,6 +318,71 @@ class HealthConnectManager(private val context: Context) {
         } while (response.hasMore)
         emit(ChangesMessage.NoMoreChanges(nextChangesToken))
     }
+    
+    suspend fun writePlanExercise() {
+        val plannedDuration = Duration.ofMinutes(90)
+        val plannedStartDate = LocalDate.now().plusDays(2)
+        
+        try {
+            
+            val plannedExerciseSesionRecord = PlannedExerciseSessionRecord(
+                startDate = plannedStartDate,
+                duration = plannedDuration,
+                exerciseType = ExerciseSessionRecord.EXERCISE_TYPE_RUNNING,
+                blocks = listOf(
+                    PlannedExerciseBlock(
+                        repetitions = 1, steps = listOf(
+                            PlannedExerciseStep(
+                                exerciseType = ExerciseSegment.EXERCISE_SEGMENT_TYPE_RUNNING,
+                                exercisePhase = PlannedExerciseStep.EXERCISE_PHASE_ACTIVE,
+                                completionGoal = ExerciseCompletionGoal.RepetitionsGoal(
+                                    repetitions = 3
+                                ),
+                                performanceTargets = listOf(
+                                    ExercisePerformanceTarget.HeartRateTarget(
+                                        minHeartRate = 90.0,
+                                        maxHeartRate = 110.0,
+                                    )
+                                )
+                            )
+                        ),
+                        description = "Three laps around the lake"
+                    ),
+                ), title = "Run at lake",
+                notes = null,
+                metadata = Metadata.manualEntry(
+                    device = Device(type = TYPE_PHONE)
+                )
+            )
+            
+            val insertedPlannedExerciseSessions =
+                healthConnectClient.insertRecords(
+                    listOf(
+                        plannedExerciseSesionRecord
+                    )
+                ).recordIdsList
+            
+            val insertedPlannedExerciseSessionId =
+                insertedPlannedExerciseSessions.first()
+            
+            Log.d(
+                TAG,
+                "insertedPlannedExerciseSessionId: $insertedPlannedExerciseSessionId"
+            )
+            
+            Toast.makeText(
+                context,
+                "Planned exercise created",
+                Toast.LENGTH_SHORT
+            ).show()
+            
+        } catch (e: Exception) {
+            Log.e(TAG, "Error write plan exercise", e)
+            Toast.makeText(context, e.message.toString(), Toast.LENGTH_SHORT)
+                .show()
+        }
+    }
+    
 }
 
 sealed class ChangesMessage {
