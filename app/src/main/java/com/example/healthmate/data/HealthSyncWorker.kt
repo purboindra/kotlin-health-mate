@@ -1,5 +1,6 @@
 package com.example.healthmate.data
 
+import android.app.Notification
 import android.content.Context
 import android.util.Log
 import androidx.health.connect.client.HealthConnectClient
@@ -7,15 +8,28 @@ import androidx.health.connect.client.records.StepsRecord
 import androidx.health.connect.client.request.ReadRecordsRequest
 import androidx.health.connect.client.time.TimeRangeFilter
 import androidx.work.CoroutineWorker
+import androidx.work.ForegroundInfo
 import androidx.work.WorkerParameters
 import java.time.ZonedDateTime
 import java.time.temporal.ChronoField
 import java.time.temporal.ChronoUnit
 
+const val NOTIFICATION_ID = 1
+
 class HealthSyncWorker(appContext: Context, params: WorkerParameters) :
     CoroutineWorker(appContext, params) {
     private val healthConnectClient by lazy {
         HealthConnectClient.getOrCreate(appContext)
+    }
+    
+    override suspend fun getForegroundInfo(): ForegroundInfo {
+        return ForegroundInfo(
+            NOTIFICATION_ID, createNotification()
+        )
+    }
+    
+    private fun createNotification(): Notification {
+        TODO()
     }
     
     override suspend fun doWork(): Result {
