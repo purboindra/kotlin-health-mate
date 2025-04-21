@@ -15,10 +15,16 @@ import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.health.connect.client.HealthConnectClient
 import androidx.navigation.compose.rememberNavController
+import androidx.work.Constraints
+import androidx.work.ExistingWorkPolicy
+import androidx.work.PeriodicWorkRequestBuilder
+import androidx.work.WorkManager
 import com.example.healthmate.data.HealthConnectManager
+import com.example.healthmate.data.HealthSyncWorker
 import com.example.healthmate.data.SensorManager
 import com.example.healthmate.ui.screen.HealthConnectUnavailable
 import dagger.hilt.android.AndroidEntryPoint
+import java.util.concurrent.TimeUnit
 
 private val TAG = "MainActivity"
 
@@ -74,5 +80,17 @@ class MainActivity : ComponentActivity() {
         SensorManager(context!!, {
             Log.d(TAG, "onPause called: $it")
         }).unregisterListener()
+    }
+    
+    private fun scheduleWeeklySync() {
+        val syncRequest = PeriodicWorkRequestBuilder<HealthSyncWorker>(
+            7, TimeUnit.DAYS,
+            1, TimeUnit.HOURS
+        ).setConstraints(
+            Constraints.Builder().setRequiresBatteryNotLow(true).build()
+        ).build()
+        
+        WorkManager.getInstance(this).enqueue(syncRequest)
+        
     }
 }
