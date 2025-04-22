@@ -1,8 +1,10 @@
 package com.example.healthmate.data
 
+import android.R
 import android.app.Notification
 import android.content.Context
 import android.util.Log
+import androidx.core.app.NotificationCompat
 import androidx.health.connect.client.HealthConnectClient
 import androidx.health.connect.client.records.StepsRecord
 import androidx.health.connect.client.request.ReadRecordsRequest
@@ -14,25 +16,23 @@ import java.time.ZonedDateTime
 import java.time.temporal.ChronoField
 import java.time.temporal.ChronoUnit
 
-const val NOTIFICATION_ID = 1
-
 class HealthSyncWorker(appContext: Context, params: WorkerParameters) :
     CoroutineWorker(appContext, params) {
+    
     private val healthConnectClient by lazy {
         HealthConnectClient.getOrCreate(appContext)
     }
     
     override suspend fun getForegroundInfo(): ForegroundInfo {
         return ForegroundInfo(
-            NOTIFICATION_ID, createNotification()
+            NOTIFICATION_ID, createSynNotification(applicationContext)
         )
     }
     
-    private fun createNotification(): Notification {
-        TODO()
-    }
-    
     override suspend fun doWork(): Result {
+        
+        setForeground(getForegroundInfo())
+        
         try {
             
             val steps = fetchWeeklySteps()
@@ -62,4 +62,20 @@ class HealthSyncWorker(appContext: Context, params: WorkerParameters) :
         )
         return healthConnectClient.readRecords(request).records
     }
+    
+    private fun createSynNotification(context: Context): Notification {
+        val channelId = "health_sync_channel"
+        
+        return NotificationCompat.Builder(context, channelId)
+            .setContentTitle("Syncing Health Data").setContentText(
+                "Processing step count..."
+            ).setSmallIcon(R.drawable.ic_notification_clear_all).setPriority(
+                NotificationCompat.PRIORITY_LOW
+            ).setOngoing(true).build()
+    }
+    
+    companion object {
+        const val NOTIFICATION_ID = 1001
+    }
+    
 }
