@@ -9,6 +9,7 @@ import android.os.Build
 import android.provider.Settings
 import android.util.Log
 import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.annotation.RequiresApi
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.MaterialTheme
@@ -45,63 +46,43 @@ fun HealthMateApp(healthConnectManager: HealthConnectManager) {
             .show()
     }
     
-    val permissionTrackingStepLauncher = rememberLauncherForActivityResult(
-        healthConnectManager.requestPermissionsActivityContract()
-    ) { granted ->
-        if (granted.containsAll(
-                setOf(
-                    Manifest.permission.ACCESS_FINE_LOCATION,
-                    Manifest.permission.ACTIVITY_RECOGNITION
-                )
-            )
+    val notificationPermissionLauncher = rememberLauncherForActivityResult(
+        ActivityResultContracts.RequestPermission()
+    ) { isGranted -> }
+    
+    fun requestNotificationPermission() {
+        if (ContextCompat.checkSelfPermission(
+                context,
+                Manifest.permission.POST_NOTIFICATIONS
+            ) != PackageManager.PERMISSION_GRANTED
         ) {
-            Log.d("HealthMate", "Permissions granted successfully!")
-        } else {
-            Log.d("HealthMate", "Permissions not granted: $granted")
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                notificationPermissionLauncher.launch(Manifest.permission.POST_NOTIFICATIONS)
+            }
         }
     }
     
-    val permissionLauncher = rememberLauncherForActivityResult(
+    val healthConnectPermissionLauncher = rememberLauncherForActivityResult(
         healthConnectManager.requestPermissionsActivityContract()
     ) { granted ->
         if (granted.containsAll(healthConnectManager.permissions)) {
             Log.d("HealthConnect", "Permissions granted successfully!")
+            requestNotificationPermission()
         } else {
             Log.d("HealthConnect", "Permissions not granted: $granted")
             showPermissionDeniedDialog()
         }
     }
     
-    fun requestStepPermission() {
-        when (PackageManager.PERMISSION_GRANTED) {
-            ContextCompat.checkSelfPermission(
-                context,
-                Manifest.permission.ACTIVITY_RECOGNITION
-            ) -> {
-                permissionTrackingStepLauncher.launch(
-                    setOf(
-                        Manifest.permission.ACTIVITY_RECOGNITION
-                    )
-                )
-            }
-            
-            else -> {
-                permissionTrackingStepLauncher.launch(
-                    setOf(
-                        Manifest.permission.ACTIVITY_RECOGNITION
-                    )
-                )
-            }
-        }
-    }
-    
     LaunchedEffect(Unit) {
-        val hasPermissions =
+        val healthConnectPermission =
             healthConnectManager.hasAllPermissions(healthConnectManager.permissions)
         
-        if (!hasPermissions) {
+        if (!healthConnectPermission) {
             Log.d("HealthConnect", "Requesting permissions...")
-            permissionLauncher.launch(healthConnectManager.permissions)
+            healthConnectPermissionLauncher.launch(healthConnectManager.permissions)
+        } else {
+            requestNotificationPermission()
         }
     }
     
