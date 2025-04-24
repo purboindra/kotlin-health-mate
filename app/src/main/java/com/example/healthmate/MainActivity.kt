@@ -1,8 +1,6 @@
 package com.example.healthmate
 
-import android.Manifest
 import android.content.Context
-import android.content.pm.PackageManager
 import android.os.Build
 import android.os.Bundle
 import android.util.Log
@@ -11,12 +9,9 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.annotation.RequiresApi
-import androidx.core.app.ActivityCompat
-import androidx.core.content.ContextCompat
 import androidx.health.connect.client.HealthConnectClient
 import androidx.navigation.compose.rememberNavController
 import androidx.work.Constraints
-import androidx.work.ExistingWorkPolicy
 import androidx.work.PeriodicWorkRequestBuilder
 import androidx.work.WorkManager
 import com.example.healthmate.data.HealthConnectManager
@@ -48,7 +43,7 @@ class MainActivity : ComponentActivity() {
         val healthConnectUnavailable =
             status != HealthConnectClient.SDK_AVAILABLE
         
-        if (status != HealthConnectClient.SDK_AVAILABLE) {
+        if (healthConnectUnavailable) {
             Toast.makeText(
                 context,
                 "Health Connect not available!",
@@ -91,6 +86,5 @@ class MainActivity : ComponentActivity() {
         ).build()
         
         WorkManager.getInstance(this).enqueue(syncRequest)
-        
     }
 }
