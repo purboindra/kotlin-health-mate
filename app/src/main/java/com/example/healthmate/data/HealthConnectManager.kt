@@ -42,6 +42,8 @@ import java.io.IOException
 import java.time.Duration
 import java.time.Instant
 import java.time.LocalDate
+import java.time.LocalTime
+import java.time.ZoneId
 import java.time.ZonedDateTime
 import java.time.temporal.ChronoField
 import kotlin.random.Random
@@ -317,6 +319,124 @@ class HealthConnectManager(private val context: Context) {
             nextChangesToken = response.nextChangesToken
         } while (response.hasMore)
         emit(ChangesMessage.NoMoreChanges(nextChangesToken))
+    }
+    
+    fun hasPlannedExercise(): Boolean {
+        return healthConnectClient.features.getFeatureStatus(
+            HealthConnectFeatures.FEATURE_PLANNED_EXERCISE
+        ) == HealthConnectFeatures.FEATURE_STATUS_AVAILABLE
+    }
+    
+    suspend fun readStepsByTimeRange() {
+        try {
+            
+            Log.d(TAG, "readStepsByTimeRange called")
+            
+            val startDate = LocalDate.of(2025, 4, 26)
+            val endDate = LocalDate.of(2025, 4, 30)
+            
+            val time = LocalTime.of(0, 0)
+            val zoneId = ZoneId.systemDefault()
+            
+            val startDateToInstant =
+                startDate.atTime(time).atZone(zoneId).toInstant()
+            val endDateToInstant =
+                endDate.atTime(time).atZone(zoneId).toInstant()
+            
+            val response = healthConnectClient.readRecords(
+                ReadRecordsRequest(
+                    PlannedExerciseSessionRecord::class,
+                    timeRangeFilter = TimeRangeFilter.between(
+                        startDateToInstant,
+                        endDateToInstant
+                    )
+                )
+            )
+            
+            val debug = mapOf(
+                "start_date" to startDate.toString(),
+                "end_date" to endDate.toString(),
+                "time" to time.toString(),
+                "zone_id" to zoneId.toString(),
+                "response" to response.records
+            )
+            
+            Log.d(TAG, "readStepsByTimeRange debug: $debug")
+            
+            for (stepsRecords in response.records) {
+                Log.d(TAG, "Read steps record: $stepsRecords")
+            }
+            
+        } catch (e: Throwable) {
+            Log.e(TAG, "Error read steps by time range", e)
+        }
+    }
+    
+    suspend fun writeWeeklyPlanExercise() {
+        
+        if (!hasPlannedExercise()) {
+            Toast.makeText(
+                context,
+                "Planned exercise unavailable!",
+                Toast.LENGTH_SHORT
+            ).show()
+            return
+        }
+        
+        val plannedDuration = Duration.ofMinutes(60)
+        val today = LocalDate.now()
+        
+        try {
+            val plannedSessions = (0 until 7).map { dayOffset ->
+                val plannedStartDate = today.plusDays(dayOffset.toLong())
+                PlannedExerciseSessionRecord(
+                    startDate = plannedStartDate,
+                    duration = plannedDuration,
+                    exerciseType = ExerciseSessionRecord.EXERCISE_TYPE_RUNNING,
+                    blocks = listOf(
+                        PlannedExerciseBlock(
+                            repetitions = 1,
+                            steps = listOf(
+                                PlannedExerciseStep(
+                                    exerciseType = ExerciseSegment.EXERCISE_SEGMENT_TYPE_RUNNING,
+                                    exercisePhase = PlannedExerciseStep.EXERCISE_PHASE_ACTIVE,
+                                    completionGoal = ExerciseCompletionGoal.RepetitionsGoal(
+                                        repetitions = 3
+                                    ),
+                                    performanceTargets = listOf(
+                                        ExercisePerformanceTarget.HeartRateTarget(
+                                            minHeartRate = 90.0,
+                                            maxHeartRate = 110.0,
+                                        )
+                                    )
+                                )
+                            ),
+                            description = "Three laps around the lake"
+                        )
+                    ),
+                    title = "Run at lake - Day ${dayOffset + 1}",
+                    notes = null,
+                    metadata = Metadata.manualEntry(
+                        device = Device(type = TYPE_PHONE)
+                    )
+                )
+            }
+            
+            val insertedPlannedExerciseSessions =
+                healthConnectClient.insertRecords(plannedSessions).recordIdsList
+            val insertedPlannedExerciseSessionId =
+                insertedPlannedExerciseSessions.first()
+            
+            Log.d(
+                TAG,
+                "insertedPlannedExerciseSessions: $insertedPlannedExerciseSessions, insertedPlannedExerciseSessionId: $insertedPlannedExerciseSessionId"
+            )
+            
+        } catch (e: Throwable) {
+            Log.e(TAG, "Error writing training plan", e)
+            Toast.makeText(context, e.message.toString(), Toast.LENGTH_SHORT)
+                .show()
+        }
     }
     
     suspend fun writePlanExercise() {
