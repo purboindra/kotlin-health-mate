@@ -1,26 +1,20 @@
 package com.example.healthmate.ui.screen.main
 
 import android.os.Build
+import android.util.Log
 import androidx.annotation.RequiresApi
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.safeContentPadding
-import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Add
 import androidx.compose.material3.ElevatedButton
-import androidx.compose.material3.Icon
-import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.SmallFloatingActionButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
@@ -31,6 +25,7 @@ import androidx.navigation.compose.rememberNavController
 import androidx.navigation.createGraph
 import com.example.healthmate.data.HealthConnectManager
 import com.example.healthmate.ui.component.AppBottomNavigationBar
+import com.example.healthmate.ui.component.DateRangePickerModal
 import com.example.healthmate.ui.component.ExpandableFAB
 import com.example.healthmate.ui.navigation.Screen
 import com.example.healthmate.ui.screen.exercise.ExerciseScreen
@@ -38,8 +33,8 @@ import com.example.healthmate.ui.screen.goal.GoalScreen
 import com.example.healthmate.ui.screen.home.HomeScreen
 import com.example.healthmate.ui.screen.profile.ProfileScreen
 import com.example.healthmate.util.VerticalSpacer
-import kotlinx.coroutines.launch
 
+@OptIn(ExperimentalMaterial3Api::class)
 @RequiresApi(Build.VERSION_CODES.Q)
 @Composable
 fun MainScreen(
@@ -52,7 +47,20 @@ fun MainScreen(
     val currentDestination =
         bottomNavController.currentBackStackEntryAsState().value?.destination?.route
     
-    val coroutineScope = rememberCoroutineScope()
+    var showDateRangeModal by remember { mutableStateOf(false) }
+    
+    if (showDateRangeModal) {
+        DateRangePickerModal(
+            onDismiss = {
+                Log.d("MainScreen", "onDismiss DateRangePickerModal")
+                showDateRangeModal = false
+            },
+            onDateRangeSelected = {
+                Log.d("MainScreen", "Selected date: $it")
+                showDateRangeModal = false
+            }
+        )
+    }
     
     Scaffold(
         floatingActionButton = {
@@ -69,11 +77,8 @@ fun MainScreen(
                             }
                             4.VerticalSpacer()
                             ElevatedButton(
-                                
                                 onClick = {
-                                    coroutineScope.launch {
-                                        healthConnectManager.writePlanExercise()
-                                    }
+                                    showDateRangeModal = true
                                 }
                             ) {
                                 Text("Set Goal")
