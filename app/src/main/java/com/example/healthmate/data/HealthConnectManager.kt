@@ -372,8 +372,7 @@ class HealthConnectManager(private val context: Context) {
         }
     }
     
-    suspend fun writeWeeklyPlanExercise() {
-        
+    suspend fun writeWeeklyPlanExercise(startDate: LocalDate) {
         if (!hasPlannedExercise()) {
             Toast.makeText(
                 context,
@@ -384,11 +383,10 @@ class HealthConnectManager(private val context: Context) {
         }
         
         val plannedDuration = Duration.ofMinutes(60)
-        val today = LocalDate.now()
         
         try {
             val plannedSessions = (0 until 7).map { dayOffset ->
-                val plannedStartDate = today.plusDays(dayOffset.toLong())
+                val plannedStartDate = startDate.plusDays(dayOffset.toLong())
                 PlannedExerciseSessionRecord(
                     startDate = plannedStartDate,
                     duration = plannedDuration,
