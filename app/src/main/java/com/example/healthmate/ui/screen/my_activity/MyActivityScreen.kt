@@ -81,9 +81,7 @@ fun MyActivityScreen(navHostController: NavHostController) {
                         modifier = Modifier
                             .size(24.dp)
                             .clickable(enabled = true, onClick = {
-                                coroutineScope.launch {
-                                    healthConnectManager.writeWeeklyPlanExercise()
-                                }
+                            
                             })
                     )
                     12.HorizontalSpacer()
