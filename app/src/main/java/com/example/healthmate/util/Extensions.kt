@@ -7,6 +7,9 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import java.time.Instant
+import java.time.LocalDate
+import java.time.ZoneId
 
 @Composable
 fun Int.VerticalSpacer() {
@@ -20,4 +23,9 @@ fun Int.HorizontalSpacer() {
 
 fun Dp.dpToFloat(): Float {
     return this.value
+}
+
+fun Long.millisToLocaleDate(): LocalDate {
+    return Instant.ofEpochMilli(this).atZone(ZoneId.systemDefault())
+        .toLocalDate()
 }
