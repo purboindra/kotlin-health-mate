@@ -2,6 +2,7 @@ package com.example.healthmate.ui.screen.main
 
 import android.os.Build
 import android.util.Log
+import android.widget.Toast
 import androidx.annotation.RequiresApi
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.padding
@@ -13,8 +14,10 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
@@ -33,6 +36,9 @@ import com.example.healthmate.ui.screen.goal.GoalScreen
 import com.example.healthmate.ui.screen.home.HomeScreen
 import com.example.healthmate.ui.screen.profile.ProfileScreen
 import com.example.healthmate.util.VerticalSpacer
+import com.example.healthmate.util.millisToLocaleDate
+import kotlinx.coroutines.launch
+import java.time.temporal.ChronoUnit
 
 @OptIn(ExperimentalMaterial3Api::class)
 @RequiresApi(Build.VERSION_CODES.Q)
@@ -42,6 +48,10 @@ fun MainScreen(
     navHostController: NavHostController,
     healthConnectManager: HealthConnectManager
 ) {
+    
+    val context = LocalContext.current
+    
+    val coroutineScope = rememberCoroutineScope()
     
     val bottomNavController = rememberNavController()
     val currentDestination =
@@ -57,6 +67,32 @@ fun MainScreen(
             },
             onDateRangeSelected = {
                 Log.d("MainScreen", "Selected date: $it")
+                
+                val startDate = it.first?.millisToLocaleDate()
+                val endDate = it.second?.millisToLocaleDate()
+                
+                val daysBetween = ChronoUnit.DAYS.between(startDate, endDate)
+                
+                Log.d("MainScreen", "Days between: $daysBetween")
+                
+                if (daysBetween > 7) {
+                    Toast.makeText(
+                        context,
+                        "Date range cannot be more than 7 days",
+                        Toast.LENGTH_SHORT
+                    ).show()
+                } else if (daysBetween < 7) {
+                    Toast.makeText(
+                        context,
+                        "Date range cannot be less than 7 days",
+                        Toast.LENGTH_SHORT
+                    ).show()
+                } else {
+                    coroutineScope.launch {
+                        healthConnectManager.writeWeeklyPlanExercise(startDate!!)
+                    }
+                }
+                
                 showDateRangeModal = false
             }
         )
