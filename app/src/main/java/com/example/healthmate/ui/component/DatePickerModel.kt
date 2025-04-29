@@ -12,6 +12,7 @@ import androidx.compose.material3.rememberDateRangePickerState
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import java.time.LocalDate
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -19,7 +20,9 @@ fun DateRangePickerModal(
     onDateRangeSelected: (Pair<Long?, Long?>) -> Unit,
     onDismiss: () -> Unit
 ) {
-    val dateRangePickerState = rememberDateRangePickerState()
+    val dateRangePickerState = rememberDateRangePickerState(
+        initialSelectedStartDateMillis = LocalDate.now().toEpochDay() * 24 * 60 * 60 * 1000,
+    )
     
     DatePickerDialog(
         onDismissRequest = onDismiss,
