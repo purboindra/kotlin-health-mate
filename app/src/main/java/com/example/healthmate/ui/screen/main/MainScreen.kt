@@ -4,19 +4,26 @@ import android.os.Build
 import android.util.Log
 import android.widget.Toast
 import androidx.annotation.RequiresApi
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ElevatedButton
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -37,7 +44,9 @@ import com.example.healthmate.ui.screen.home.HomeScreen
 import com.example.healthmate.ui.screen.profile.ProfileScreen
 import com.example.healthmate.util.VerticalSpacer
 import com.example.healthmate.util.millisToLocaleDate
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import java.time.LocalDate
 import java.time.temporal.ChronoUnit
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -58,22 +67,22 @@ fun MainScreen(
         bottomNavController.currentBackStackEntryAsState().value?.destination?.route
     
     var showDateRangeModal by remember { mutableStateOf(false) }
+    var startDate: LocalDate? by remember { mutableStateOf(null) }
+    var endDate: LocalDate? by remember { mutableStateOf(null) }
+    var loadingSetPlans by remember { mutableStateOf(false) }
+    
+    var expand by remember { mutableStateOf(false) }
     
     if (showDateRangeModal) {
         DateRangePickerModal(
             onDismiss = {
-                Log.d("MainScreen", "onDismiss DateRangePickerModal")
                 showDateRangeModal = false
             },
             onDateRangeSelected = {
-                Log.d("MainScreen", "Selected date: $it")
+                val start = it.first?.millisToLocaleDate()
+                val end = it.second?.millisToLocaleDate()
                 
-                val startDate = it.first?.millisToLocaleDate()
-                val endDate = it.second?.millisToLocaleDate()
-                
-                val daysBetween = ChronoUnit.DAYS.between(startDate, endDate)
-                
-                Log.d("MainScreen", "Days between: $daysBetween")
+                val daysBetween = ChronoUnit.DAYS.between(start, end)
                 
                 if (daysBetween > 7) {
                     Toast.makeText(
@@ -88,9 +97,9 @@ fun MainScreen(
                         Toast.LENGTH_SHORT
                     ).show()
                 } else {
-                    coroutineScope.launch {
-                        healthConnectManager.writeWeeklyPlanExercise(startDate!!)
-                    }
+                    startDate = start
+                    endDate = end
+                    
                 }
                 
                 showDateRangeModal = false
@@ -98,10 +107,24 @@ fun MainScreen(
         )
     }
     
+    LaunchedEffect(startDate, endDate) {
+        if (!showDateRangeModal && startDate != null && endDate != null) {
+            loadingSetPlans = true
+            healthConnectManager.writeWeeklyPlanExercise(startDate!!)
+            delay(2000)
+            loadingSetPlans = false
+            startDate = null
+            endDate = null
+            Toast.makeText(context, "Plans set successfully", Toast.LENGTH_SHORT).show()
+        }
+    }
+    
     Scaffold(
         floatingActionButton = {
             if (currentDestination == "/exercise")
                 ExpandableFAB(
+                    expand = expand,
+                    setExpand = { expand = !expand },
                     content = {
                         Column {
                             ElevatedButton(
@@ -114,6 +137,7 @@ fun MainScreen(
                             4.VerticalSpacer()
                             ElevatedButton(
                                 onClick = {
+                                    expand = false
                                     showDateRangeModal = true
                                 }
                             ) {
@@ -161,6 +185,7 @@ fun MainScreen(
                     modifier = Modifier.padding(paddingValues),
                     navHostController = navHostController,
                     healthConnectManager = healthConnectManager,
+                    loadingSetPlans = loadingSetPlans,
                 )
             }
             composable(
