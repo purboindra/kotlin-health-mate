@@ -28,8 +28,9 @@ import androidx.compose.ui.unit.dp
 fun ExpandableFAB(
     modifier: Modifier = Modifier,
     content: @Composable (() -> Unit),
+    setExpand: (Boolean) -> Unit,
+    expand: Boolean
 ) {
-    var expand by remember { mutableStateOf(false) }
     
     Box(
         modifier = modifier.fillMaxSize(),
@@ -41,12 +42,12 @@ fun ExpandableFAB(
             modifier = modifier.padding(bottom = 10.dp, end = 24.dp),
         ) {
             
-            AnimatedVisibility(visible = expand,) {
+            AnimatedVisibility(visible = expand) {
                 content()
             }
             
             FloatingActionButton(
-                onClick = { expand = !expand },
+                onClick = { setExpand(!expand) },
                 containerColor = Color(0xFFE8EBFF)
             ) {
                 Icon(Icons.Default.Add, contentDescription = "Expand")
