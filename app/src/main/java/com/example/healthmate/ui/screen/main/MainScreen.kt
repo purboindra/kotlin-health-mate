@@ -60,8 +60,6 @@ fun MainScreen(
     
     val context = LocalContext.current
     
-    val coroutineScope = rememberCoroutineScope()
-    
     val bottomNavController = rememberNavController()
     val currentDestination =
         bottomNavController.currentBackStackEntryAsState().value?.destination?.route
