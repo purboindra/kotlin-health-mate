@@ -437,67 +437,45 @@ class HealthConnectManager(private val context: Context) {
         }
     }
     
-    suspend fun writePlanExercise() {
-        val plannedDuration = Duration.ofMinutes(90)
-        val plannedStartDate = LocalDate.now().plusDays(2)
-        
+    suspend fun readWeeklyPlanExercise(
+        startDate: LocalDate,
+        endDate: LocalDate
+    ) {
         try {
+            val time = LocalTime.of(0, 0)
+            val zoneId = ZoneId.systemDefault()
             
-            val plannedExerciseSesionRecord = PlannedExerciseSessionRecord(
-                startDate = plannedStartDate,
-                duration = plannedDuration,
-                exerciseType = ExerciseSessionRecord.EXERCISE_TYPE_RUNNING,
-                blocks = listOf(
-                    PlannedExerciseBlock(
-                        repetitions = 1, steps = listOf(
-                            PlannedExerciseStep(
-                                exerciseType = ExerciseSegment.EXERCISE_SEGMENT_TYPE_RUNNING,
-                                exercisePhase = PlannedExerciseStep.EXERCISE_PHASE_ACTIVE,
-                                completionGoal = ExerciseCompletionGoal.RepetitionsGoal(
-                                    repetitions = 3
-                                ),
-                                performanceTargets = listOf(
-                                    ExercisePerformanceTarget.HeartRateTarget(
-                                        minHeartRate = 90.0,
-                                        maxHeartRate = 110.0,
-                                    )
-                                )
-                            )
-                        ),
-                        description = "Three laps around the lake"
-                    ),
-                ), title = "Run at lake",
-                notes = null,
-                metadata = Metadata.manualEntry(
-                    device = Device(type = TYPE_PHONE)
+            val startDateToInstant =
+                startDate.atTime(time).atZone(zoneId).toInstant()
+            val endDateToInstant =
+                endDate.atTime(time).atZone(zoneId).toInstant()
+            val searchDuration = Duration.ofDays(1)
+            
+            val response = healthConnectClient.readRecords(
+                ReadRecordsRequest<ExerciseSessionRecord>(
+                    timeRangeFilter = TimeRangeFilter.between(
+                        startDateToInstant,
+                        endDateToInstant
+                    )
                 )
             )
             
-            val insertedPlannedExerciseSessions =
-                healthConnectClient.insertRecords(
-                    listOf(
-                        plannedExerciseSesionRecord
-                    )
-                ).recordIdsList
-            
-            val insertedPlannedExerciseSessionId =
-                insertedPlannedExerciseSessions.first()
-            
-            Log.d(
-                TAG,
-                "insertedPlannedExerciseSessionId: $insertedPlannedExerciseSessionId"
+            val debug = mapOf(
+                "start_date" to startDate.toString(),
+                "end_date" to endDate.toString(),
+                "time" to time.toString(),
+                "zone_id" to zoneId.toString(),
+                "response" to response.records
             )
             
-            Toast.makeText(
-                context,
-                "Planned exercise created",
-                Toast.LENGTH_SHORT
-            ).show()
+            Log.d(TAG, "readWeeklyPlanExercise debug: $debug")
             
-        } catch (e: Exception) {
-            Log.e(TAG, "Error write plan exercise", e)
-            Toast.makeText(context, e.message.toString(), Toast.LENGTH_SHORT)
-                .show()
+            for (stepsRecords in response.records) {
+                Log.d(TAG, "Read steps record: $stepsRecords")
+            }
+            
+        } catch (e: Throwable) {
+            Log.d(TAG, "Error reading training plan", e)
         }
     }
     
