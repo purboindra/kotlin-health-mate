@@ -74,7 +74,6 @@ fun ExerciseScreen(
     exerciseViewModel: ExerciseViewModel = hiltViewModel(),
     healthConnectManager: HealthConnectManager,
     loadingSetPlans: Boolean,
-    
 ) {
     var loading by remember { mutableStateOf(false) }
     

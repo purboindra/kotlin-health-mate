@@ -15,15 +15,25 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import com.example.healthmate.ui.theme.GrayDark
 import com.example.healthmate.util.VerticalSpacer
+import java.time.DayOfWeek
+import java.time.LocalDate
+import java.time.format.DateTimeFormatter
+import java.util.Locale
 
 @Composable
-fun MyActivityWeekly(modifier: Modifier = Modifier) {
+fun MyActivityWeekly(
+    modifier: Modifier = Modifier,
+    firstDayOfWeek: String,
+    lastDayOfWeek: String,
+    onPrev: () -> Unit,
+    onNext: () -> Unit,
+) {
     Column(modifier = modifier.fillMaxSize()) {
         DateMyActivityDaily(
             modifier = modifier,
-            title = "6-12 April",
-            onNext = {},
-            onPrev = {}
+            title = "$firstDayOfWeek - $lastDayOfWeek",
+            onNext = onNext,
+            onPrev = onPrev,
         )
         8.VerticalSpacer()
         ChartMyActivityDaily(modifier = modifier)

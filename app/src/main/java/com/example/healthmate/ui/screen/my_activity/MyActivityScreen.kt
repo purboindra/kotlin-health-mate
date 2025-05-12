@@ -16,14 +16,17 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import com.example.healthmate.data.HealthConnectManager
 import com.example.healthmate.ui.component.MyActivityDaily
@@ -33,10 +36,17 @@ import com.example.healthmate.ui.component.PrimaryTextTabs
 import com.example.healthmate.util.HorizontalSpacer
 import com.example.healthmate.util.VerticalSpacer
 import kotlinx.coroutines.launch
+import java.time.DayOfWeek
+import java.time.LocalDate
+import java.time.format.DateTimeFormatter
+import java.util.Locale
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun MyActivityScreen(navHostController: NavHostController) {
+fun MyActivityScreen(
+    navHostController: NavHostController,
+    myActivityViewModel: MyActivityViewModel = hiltViewModel<MyActivityViewModel>()
+) {
     
     val context = LocalContext.current
     
@@ -45,6 +55,9 @@ fun MyActivityScreen(navHostController: NavHostController) {
     val healthConnectManager = remember {
         HealthConnectManager(context)
     }
+    
+    val firstDayOfWeek by myActivityViewModel.firstDayOfWeek.collectAsState()
+    val lastDayOfWeek by myActivityViewModel.lastDayOfWeek.collectAsState()
     
     var tabIndex by remember { mutableIntStateOf(0) }
     
@@ -109,7 +122,16 @@ fun MyActivityScreen(navHostController: NavHostController) {
                 }
                 
                 1 -> {
-                    MyActivityWeekly()
+                    MyActivityWeekly(
+                        firstDayOfWeek = firstDayOfWeek ?: "",
+                        lastDayOfWeek = lastDayOfWeek ?: "",
+                        onNext = {
+                            myActivityViewModel.onWeeklyChange("Next")
+                        },
+                        onPrev = {
+                            myActivityViewModel.onWeeklyChange("Prev")
+                        }
+                    )
                 }
                 
                 else -> {
