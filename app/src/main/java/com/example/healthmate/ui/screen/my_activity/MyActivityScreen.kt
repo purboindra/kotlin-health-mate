@@ -51,6 +51,7 @@ fun MyActivityScreen(
     val context = LocalContext.current
     
     val coroutineScope = rememberCoroutineScope()
+    val formatter = DateTimeFormatter.ofPattern("d MMM", Locale("id"))
     
     val healthConnectManager = remember {
         HealthConnectManager(context)
@@ -123,8 +124,9 @@ fun MyActivityScreen(
                 
                 1 -> {
                     MyActivityWeekly(
-                        firstDayOfWeek = firstDayOfWeek ?: "",
-                        lastDayOfWeek = lastDayOfWeek ?: "",
+                        firstDayOfWeek = firstDayOfWeek?.format(formatter)
+                            ?: "",
+                        lastDayOfWeek = lastDayOfWeek?.format(formatter) ?: "",
                         onNext = {
                             myActivityViewModel.onWeeklyChange("Next")
                         },
