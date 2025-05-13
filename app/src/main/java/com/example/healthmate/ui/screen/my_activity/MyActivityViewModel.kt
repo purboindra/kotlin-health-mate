@@ -22,23 +22,21 @@ class MyActivityViewModel @Inject constructor(
     
     private val today = LocalDate.now()
     
-    private val firstDayOfWeekMonday =
-        MutableStateFlow(today.with(DayOfWeek.MONDAY))
-    private val lastDayOfWeekSunday =
-        MutableStateFlow(today.with(DayOfWeek.SUNDAY))
+    private val firstDayOfWeekMonday = today.with(DayOfWeek.MONDAY)
+    private val lastDayOfWeekSunday = today.with(DayOfWeek.SUNDAY)
     
     private val _firstDayOfWeek =
-        MutableStateFlow<LocalDate?>(firstDayOfWeekMonday.value)
+        MutableStateFlow<LocalDate?>(firstDayOfWeekMonday)
     val firstDayOfWeek = _firstDayOfWeek.asStateFlow()
     
     private val _lastDayOfWeek =
-        MutableStateFlow<LocalDate?>(lastDayOfWeekSunday.value)
+        MutableStateFlow<LocalDate?>(lastDayOfWeekSunday)
     val lastDayOfWeek = _lastDayOfWeek.asStateFlow()
     
     fun onWeeklyChange(direction: String) {
         if (direction == "Next") {
             _firstDayOfWeek.value = _firstDayOfWeek.value?.plusWeeks(1)
-          _lastDayOfWeek.value = _lastDayOfWeek.value?.plusWeeks(1)
+            _lastDayOfWeek.value = _lastDayOfWeek.value?.plusWeeks(1)
         } else {
             _firstDayOfWeek.value = _firstDayOfWeek.value?.minusWeeks(1)
             _lastDayOfWeek.value = _lastDayOfWeek.value?.minusWeeks(1)
